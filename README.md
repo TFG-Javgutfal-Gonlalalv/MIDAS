@@ -1,1 +1,1 @@
-# MIDAS (Modeladores Inteligentes de Diagramas AutomatizadoS)
+# MIDAS (Modelador Inteligente de Diagramas AutomatizadoS)
