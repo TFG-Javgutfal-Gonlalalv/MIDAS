@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from main.models import Class, Attribute, Relation, Run
+
+admin.site.register(Run)
+admin.site.register(Class)
+admin.site.register(Attribute)
+admin.site.register(Relation)
