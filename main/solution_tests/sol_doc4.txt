@@ -1,0 +1,8 @@
+prueba:[]
+jugador:[]
+partido:[]
+autobús:[]
+vehículo:[]
+equipo:[]
+entrenador:[]
+estadística:[]

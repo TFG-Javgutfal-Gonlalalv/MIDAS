@@ -1,0 +1,8 @@
+El sistema de biblioteca de Sevilla es utilizado por los estudiantes y profesores de Informática.
+La biblioteca de Sevilla contiene libros y revistas.
+Los libros se pueden entregar tanto a los estudiantes como a los profesores.
+Las revistas solo se pueden enviar a los profesores. Los libros y revistas solo pueden ser publicados por el bibliotecario.
+El bibliotecario adjunto se encarga de recibir los libros y revistas devueltos.
+El contable será responsable de recibir la multa por libros vencidos.
+La multa se cobra solo a los estudiantes y no a los profesores.
+Los estudiantes tienen nombre, apellido y nif.

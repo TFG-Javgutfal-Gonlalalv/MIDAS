@@ -1,0 +1,12 @@
+Como entrenador deseo que el sistema me permita crear un equipo formado por un número
+de jugadores, además quiero que me deje elegir un capitán para ese equipo de
+entre los jugadores añadidos al equipo. Además se quiere almacenar el nombre, apellidos y nif
+de cada jugador.
+
+Como entrenador deseo que el sistema me permita crear un partido seleccionando el equipo
+que participará en dicho partido, así como la fecha y la hora en las cuales se diputará dicho
+partido.
+
+Como entrenador deseo que el sistema me permita crear un entrenamiento seleccionando
+el equipo que participará en dicho entrenamiento, así como la fecha y la hora en las cuales
+se diputará dicho entrenamiento.

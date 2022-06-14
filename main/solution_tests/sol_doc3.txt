@@ -1,0 +1,6 @@
+equipo:[]
+jugador:[nombre, apellidos, dni]
+capitán:[]
+partido:[fecha,hora]
+entrenamiento:[fecha,hora]
+entrenador:[]

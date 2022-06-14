@@ -1,0 +1,5 @@
+gerente:[]
+administrador:[]
+anónimo:[]
+tarea:[carga_de_trabajo,título,periodo_de_ejecución,descripción,enlace]
+grito:[momento_de_creación,autor,texto,enlace]

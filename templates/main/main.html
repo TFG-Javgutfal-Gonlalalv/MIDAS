@@ -1,0 +1,35 @@
+
+{% block head %}
+    <title>Resultados:</title>
+
+
+{% endblock head %}
+
+
+{% block header %}
+    <h1 align="center">Resultados</h1>
+    <br>
+
+{% endblock header %}
+
+
+
+{% block content %}
+
+    <h3>Requisitos de entrada:</h3>
+    {{ requirements }}
+
+    <h3>Solución obtenida:</h3>
+    {{ solutions }}
+
+    <h3>Porcentaje de acierto en clases:</h3>
+    {{ class_rate }}
+    <h3>Porcentaje de acierto en atributos:</h3>
+    {{ attribute_rate }}
+    <h3>Porcentaje de acierto general:</h3>
+    {{ general_rate }}
+
+
+{% endblock content %}
+{% block footer %}
+{% endblock footer %}
