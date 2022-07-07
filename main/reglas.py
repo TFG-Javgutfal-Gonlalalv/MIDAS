@@ -1,5 +1,5 @@
-from utils import get_key_words
-from clases import Class, Attribute
+from main.utils import get_key_words
+from main.clases import Class, Attribute
 
 def lista_locs(doc):
     lista = []
