@@ -1,10 +1,18 @@
 from django.db import models
 
+class User(models.Model):
+    name = models.CharField(max_length=30)
+    surname = models.CharField(max_length=50)
+    email = models.EmailField()
+    username = models.CharField(max_length=30)
+    password = models.CharField(max_length=30)
+
 
 class Run(models.Model):
     text = models.TextField(null=False, default="", help_text="Este será el texto del que se extraerán las entidades para el modelado")
     run_datetime = models.DateTimeField(null=False, auto_now_add=True)
     log_run = models.TextField(default="")
+    user_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
 
 class Class(models.Model):

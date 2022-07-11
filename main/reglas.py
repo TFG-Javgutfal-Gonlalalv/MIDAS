@@ -1,5 +1,5 @@
 from main.utils import get_key_words
-from main.clases import Class, Attribute
+from main.models import Class, Attribute, Run
 
 def lista_locs(doc):
     lista = []
@@ -10,7 +10,7 @@ def lista_locs(doc):
     return lista
 
 
-def class_detection_rules(doc):
+def class_detection_rules(doc,run):
     nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN" ]
 
     words = nouns.copy()
@@ -22,40 +22,42 @@ def class_detection_rules(doc):
     for word in words:
         value = nouns.count(word)
 
-        clase = Class(word)
-        attribute = Attribute(word)
+        if not Class.objects.filter(name=word).exists():
+            clase = Class(name=word,score=0,run_fk=run)
 
-        # Rule 1: Infrequent words
-        if value == 1 and float(value / len(words)) < 0.02:
-            clase.update_percent(-10)
-        else:
-            clase.update_percent(+10)
 
-        # Rule 2: Technicalities
-        if word.lower() in technicalities:
-            clase.update_percent(-100)
-        else:
-            clase.update_percent(+10)
+            # Rule 1: Infrequent words
+            if value == 1 and float(value / len(words)) < 0.02:
+                clase.score(clase.score()-10)
+            else:
+                clase.score(clase.score()+10)
 
-        # Rule 3: Attributes
+            # Rule 2: Technicalities
+            if word.lower() in technicalities:
+                clase.score(clase.score()-100)
+            else:
+                clase.score(clase.score()+10)
 
-        if word.lower() in attributes_list:
-            clase.update_percent(-100)
-        else:
-            clase.update_percent(+10)
+            # Rule 3: Attributes
 
-        # Rule 4: Si la palabra es una localización u organización ignorarla
-        if word in lista_locs(doc):
-            clase.update_percent(-100)
-        else:
-            clase.update_percent(+10)
+            if word.lower() in attributes_list:
+                clase.score(clase.score()-100)
+            else:
+                clase.score(clase.score()+10)
 
-        if clase.percent >= 0:
-            classes.append(clase)
-            classes = list(set(classes))
+            # Rule 4: Si la palabra es una localización u organización ignorarla
+            if word in lista_locs(doc):
+                clase.score(clase.score()-100)
+            else:
+                clase.score(clase.score()+10)
 
-        attributes.append(Attribute(word))
-        attributes = list(set(attributes))
+            if clase.score >= 0:
+                classes.append(clase)
+
+        if not Attribute.objects.filter(name=word).exists():
+            attribute = Attribute(name=word, score=0)
+            attributes.append(attribute)
+
     phrases = doc.text.split(".")
 
     #detector atributos y clase tras ":"
@@ -65,21 +67,22 @@ def class_detection_rules(doc):
         if ":" in phrase:
             for clase in classes:
                 if clase.name in phrase[0:phrase.index(":")]:
-                    clase.update_percent(20)
+                    clase.score(clase.score()+20)
                     clase_objetivo = clase
 
             for attribute in attributes:
                 if attribute.name in phrase[phrase.index(":"):len(phrase)]:
-                    clase_objetivo.add_update_attribute(attribute,20)
+                    attribute.score(attribute.score+20)
+                    attribute.class_fk = clase_objetivo
                     list_classes = [x for x in classes if x.name == attribute.name]
                     if len(list_classes) > 0:
                         el = list_classes[0]
-                        el.update_percent(-50)
+                        el.score(el.score-50)
 
     classes_final = []
     for clase in classes:
 
-        if clase.percent >= 0:
+        if clase.score >= 0:
             classes_final.append(clase)
 
     for phrase in phrases:
@@ -91,14 +94,15 @@ def class_detection_rules(doc):
             for clase in classes:
                 if clase.name in after:
                     clase_objetivo = clase
-                    clase_objetivo.update_percent(10)
+                    clase_objetivo.score(clase_objetivo.score+10)
             for attribute in attributes:
 
                 if attribute.name in before:
+                    attribute.class_fk = clase_objetivo
                     if attribute.name in attributes_list:
-                        clase_objetivo.add_update_attribute(attribute,50)
+                        attribute.score(attribute.score+50)
                     else:
-                        clase_objetivo.add_update_attribute(attribute,20)
+                        attribute.score(attribute.score+20)
 
     for phrase in phrases:
         for attribute in attributes:

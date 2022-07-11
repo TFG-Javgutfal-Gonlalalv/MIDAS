@@ -1,17 +1,24 @@
+import datetime
+
 import spacy
 
+from main.models import Class, Attribute, Run
 from reglas import class_detection_rules
 from utils import get_success_rate_classes, get_success_rate_attributes, show_success_rate_chart, update_log
 
 
-def ejecucion(doc):
+def ejecucion(docIn):
     nlp = spacy.load("es_core_news_lg")
 
     num = 2
     documento = open("docs/doc" + str(num), "r", encoding="utf-8").read()
 
     doc = nlp(documento)
-    classes = class_detection_rules(doc)
+
+    run = Run(text=documento,run_datetime=datetime.datetime.now())
+
+
+    classes = class_detection_rules(doc, run)
 
     print("\n")
     for clase in classes:
