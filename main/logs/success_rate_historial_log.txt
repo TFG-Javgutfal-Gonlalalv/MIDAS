@@ -45,3 +45,16 @@
 14/06/2022, 10:27:11 -> doc: doc1 | class_rate: 0.8235294117647058 | attribute_rate: 0.8 | relationship_rate: 0.0 | general_rate: 0.5411764705882353 | 
 14/06/2022, 10:27:24 -> doc: doc1 | class_rate: 0.8235294117647058 | attribute_rate: 0.8 | relationship_rate: 0.0 | general_rate: 0.5411764705882353 | 
 14/06/2022, 10:27:49 -> doc: doc3 | class_rate: 1.0 | attribute_rate: 0.5454545454545454 | relationship_rate: 0.0 | general_rate: 0.5151515151515151 | 
+12/07/2022, 23:01:42 -> class_rate: 0.0 | attribute_rate: 0.0 | relationship_rate: 0.0 | general_rate: 0.0 | 
+12/07/2022, 23:08:19 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:09:03 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:15:54 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:16:46 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:17:12 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:18:07 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:26:49 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:27:06 -> class_rate: 0.0 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.12820512820512822 | 
+12/07/2022, 23:33:10 -> class_rate: 0.3333333333333333 | attribute_rate: 0.38461538461538464 | relationship_rate: 0.0 | general_rate: 0.23931623931623933 | 
+12/07/2022, 23:34:22 -> class_rate: 0.875 | attribute_rate: 0.13793103448275862 | relationship_rate: 0.0 | general_rate: 0.33764367816091956 | 
+12/07/2022, 23:34:56 -> class_rate: 0.3333333333333333 | attribute_rate: 0.29411764705882354 | relationship_rate: 0.0 | general_rate: 0.20915032679738563 | 
+12/07/2022, 23:35:05 -> class_rate: 1.0 | attribute_rate: 0.15 | relationship_rate: 0.0 | general_rate: 0.3833333333333333 | 

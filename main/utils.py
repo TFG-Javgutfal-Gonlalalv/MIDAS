@@ -1,5 +1,6 @@
 import difflib
 import datetime
+from main.models import Attribute
 
 
 def get_key_words(file: str) -> set:
@@ -35,7 +36,7 @@ def update_log(file: str, data: dict):
 
 
 def get_success_rate_classes(doc_num: int, classes: list) -> float:
-    f = open('solution_tests/sol_doc' + str(doc_num) + '.txt', 'r', encoding='utf-8')
+    f = open('main/solution_tests/sol_doc' + str(doc_num) + '.txt', 'r', encoding='utf-8')
     solution_test = f.read().split("\n")
 
     class_sol = [line.split(':')[0] for line in solution_test]
@@ -46,7 +47,7 @@ def get_success_rate_classes(doc_num: int, classes: list) -> float:
 
 
 def get_success_rate_attributes(doc_num: int, classes: list) -> float:
-    f = open('solution_tests/sol_doc' + str(doc_num) + '.txt', 'r', encoding='utf-8')
+    f = open('main/solution_tests/sol_doc' + str(doc_num) + '.txt', 'r', encoding='utf-8')
     solution_test = f.read().split("\n")
 
     # Obtenemos los atributos correctos del test de la solución
@@ -58,9 +59,9 @@ def get_success_rate_attributes(doc_num: int, classes: list) -> float:
 
     # Obtenemos los atributos obtenidos tras el análisis de los requisitos
     attribute_names = set()
-    for c in classes:
-        for a in set(c.attributes.keys()):
-            attribute_names.add(a.name)
+    attributes = Attribute.objects.all()
+    for attribute in attributes:
+        attribute_names.add(attribute.name)
 
     sm = difflib.SequenceMatcher(None, sorted(attributes_sol), sorted(attribute_names))
     return sm.ratio()
