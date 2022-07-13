@@ -1,7 +1,8 @@
 import difflib
 import datetime
-from main.models import Attribute
 
+from main.clases import Class
+from main.models import Class, Attribute
 
 def get_key_words(file: str) -> set:
     f = open(file, 'r', encoding='utf-8')
@@ -59,9 +60,22 @@ def get_success_rate_attributes(doc_num: int, classes: list) -> float:
 
     # Obtenemos los atributos obtenidos tras el análisis de los requisitos
     attribute_names = set()
-    attributes = Attribute.objects.all()
-    for attribute in attributes:
-        attribute_names.add(attribute.name)
+    for c in classes:
+        print(str(c))
+        for a in set(c.attributes.keys()):
+            attribute_names.add(a.name)
 
     sm = difflib.SequenceMatcher(None, sorted(attributes_sol), sorted(attribute_names))
     return sm.ratio()
+
+def creation_clasess_attributes_relations(clasess, run):
+
+    for clase in clasess:
+
+        clase_bd = Class(name=clase.name, score=clase.percent, run_fk=run)
+        clase_bd.save()
+
+        for attribute in clase.attributes.items():
+            print("Atributo a generar: ",attribute[0].name)
+            attribute_bd = Attribute(name=attribute[0].name, score=attribute[1],run_fk=run,class_fk=clase_bd)
+            attribute_bd.save()
