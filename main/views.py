@@ -6,7 +6,7 @@ from main.utils import get_success_rate_classes, get_success_rate_attributes, up
 # Create your views here.
 
 def get_general(request):
-    num = 4
+    num = 1
     documento = open("main/docs/doc" + str(num), "r", encoding="utf-8").read()
     run, class_rate,attribute_rate, relationship_rate, general_rate = ejecucion(documento,num)
 

@@ -25,7 +25,6 @@ class Class:
     def __hash__(self):
         return hash(self.name)
 
-
 class Attribute:
     def __init__(self, name):
         self.name = name
@@ -38,3 +37,20 @@ class Attribute:
 
     def __hash__(self):
         return hash(self.name)
+
+class Relation:
+    def __init__(self, class1,class2,verb):
+        self.class1 = class1
+        self.class2 = class2
+        self.verb = verb
+
+    def __str__(self):
+        return "" + self.class1.name + " - " + self.verb + " - " + self.class2.name
+
+    def __eq__(self, class1):
+        return self.class1 == class1
+
+    def __hash__(self):
+        return hash(self.class1)
+
+

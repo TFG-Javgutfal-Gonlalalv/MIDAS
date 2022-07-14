@@ -17,14 +17,14 @@ def ejecucion(docIn, num):
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
     run.save()
 
-    classes = class_detection_rules(doc)
+    classes, relations = class_detection_rules(doc)
 
     class_rate = get_success_rate_classes(num, classes)
     attribute_rate = get_success_rate_attributes(num, classes)
     relationship_rate = 0.0
 
     general_rate = (class_rate + attribute_rate + relationship_rate) / 3
-    creation_clasess_attributes_relations(classes, run)
+    creation_clasess_attributes_relations(classes, relations, run)
 
     update_log('main/logs/success_rate_historial_log.txt',
                {'class_rate': class_rate,

@@ -1,5 +1,7 @@
 from main.utils import get_key_words
-from main.clases import Class, Attribute
+from main.clases import Class, Attribute, Relation
+import spacy
+
 
 def lista_locs(doc):
     lista = []
@@ -12,6 +14,7 @@ def lista_locs(doc):
 
 def class_detection_rules(doc):
     nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN" ]
+
 
     words = nouns.copy()
     words_final = nouns.copy()
@@ -126,6 +129,33 @@ def class_detection_rules(doc):
                     if clase_objetivo is not None:
                         clase_objetivo.add_update_attribute(attribute,20)
 
-    for at in attributes:
-        print("Atrubitos posibles: ",at.name)
-    return classes_final
+    relations_final = relations_detections(classes_final,doc)
+    return classes_final, relations_final
+
+def relations_detections (classes, doc):
+    phrases = doc.text.split(".")
+    nlp = spacy.load("es_core_news_lg")
+    relations = []
+    print (classes)
+    for phrase in phrases:
+        first_class = None
+        verb = None
+        second_class =None
+
+        for token in nlp(phrase):
+
+            if (token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes):
+                first_class = classes[classes.index(token.lemma_)]
+            if (token.pos_ == "VERB" and token.dep_ == "ROOT"):
+                verb = token.text
+            if (token.pos_ == "NOUN" and (token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes):
+                if first_class != None and first_class.name != token.lemma_:
+                    second_class = classes[classes.index(token.lemma_)]
+
+        if (first_class != None and verb != None and second_class != None):
+            relations.append(Relation(first_class,second_class, verb))
+
+    for relation in relations:
+        print(str(relation))
+
+    return relations

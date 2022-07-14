@@ -30,4 +30,6 @@ class Attribute(models.Model):
 class Relation(models.Model):
     class_fk_1 = models.ForeignKey(Class, on_delete=models.CASCADE, null=False, related_name="Clase1")
     class_fk_2 = models.ForeignKey(Class, on_delete=models.CASCADE, null=False, related_name="Clase2")
+    verb = models.CharField(max_length=100)
     score = models.FloatField(null=False, default=1.0)
+    run_fk = models.ForeignKey(Run, on_delete=models.CASCADE, null=False)
