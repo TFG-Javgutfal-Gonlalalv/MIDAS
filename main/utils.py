@@ -80,5 +80,6 @@ def creation_clasess_attributes_relations(clasess,relations, run):
 
     for relation in relations:
         relation_bd = Relation(class_fk_1=Class.objects.get(name=relation.class1.name, run_fk=run),
-                               class_fk_2=Class.objects.get(name=relation.class2.name, run_fk=run), verb=relation.verb, run_fk=run)
+                               class_fk_2=Class.objects.get(name=relation.class2.name, run_fk=run), verb=relation.verb,
+                                phrase=relation.phrase, run_fk=run)
         relation_bd.save()

@@ -136,7 +136,6 @@ def relations_detections (classes, doc):
     phrases = doc.text.split(".")
     nlp = spacy.load("es_core_news_lg")
     relations = []
-    print (classes)
     for phrase in phrases:
         first_class = None
         verb = None
@@ -153,9 +152,6 @@ def relations_detections (classes, doc):
                     second_class = classes[classes.index(token.lemma_)]
 
         if (first_class != None and verb != None and second_class != None):
-            relations.append(Relation(first_class,second_class, verb))
-
-    for relation in relations:
-        print(str(relation))
+            relations.append(Relation(first_class,second_class, verb, phrase))
 
     return relations

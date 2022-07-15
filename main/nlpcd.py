@@ -9,9 +9,8 @@ from main.utils import get_success_rate_classes, get_success_rate_attributes, cr
     update_log
 
 
-def ejecucion(docIn, num):
+def ejecucion(docIn, num, user):
     nlp = spacy.load("es_core_news_lg")
-    user = User.objects.get(name="test")
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)

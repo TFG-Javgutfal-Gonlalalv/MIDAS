@@ -1,12 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-class User(models.Model):
-    name = models.CharField(max_length=30)
-    surname = models.CharField(max_length=50)
-    email = models.EmailField()
-    username = models.CharField(max_length=30)
-    password = models.CharField(max_length=30)
-
+class UserExtras (models.Model):
+    user_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
 class Run(models.Model):
     text = models.TextField(null=False, default="", help_text="Este será el texto del que se extraerán las entidades para el modelado")
@@ -29,7 +25,10 @@ class Attribute(models.Model):
 
 class Relation(models.Model):
     class_fk_1 = models.ForeignKey(Class, on_delete=models.CASCADE, null=False, related_name="Clase1")
+    multiplicity_1 = models.CharField(max_length=1)
     class_fk_2 = models.ForeignKey(Class, on_delete=models.CASCADE, null=False, related_name="Clase2")
+    multiplicity_2 = models.CharField(max_length=1)
     verb = models.CharField(max_length=100)
+    phrase = models.CharField(max_length=500)
     score = models.FloatField(null=False, default=1.0)
     run_fk = models.ForeignKey(Run, on_delete=models.CASCADE, null=False)
