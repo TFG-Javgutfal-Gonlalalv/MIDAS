@@ -33,4 +33,18 @@ def ejecucion(docIn, num, user):
 
     # show_success_rate_chart(class_rate, attribute_rate, relationship_rate, general_rate)
 
-    return run, class_rate,attribute_rate, relationship_rate, general_rate
+    return run, class_rate, attribute_rate, relationship_rate, general_rate
+
+
+def ejecucion_sin_solucion(docIn, user):
+    nlp = spacy.load("es_core_news_lg")
+    doc = nlp(docIn)
+
+    run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
+    run.save()
+
+    classes, relations = class_detection_rules(doc)
+
+    creation_clasess_attributes_relations(classes, relations, run)
+
+    return run

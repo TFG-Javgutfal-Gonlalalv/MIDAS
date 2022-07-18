@@ -1,3 +1,5 @@
 Los directores del sistema pueden ser usuarios anónimos, administradores o gerentes.
 El sistema debe almacenar gritos con los siguientes datos: un momento de creación, un autor (puede ser un nombre inventado), un fragmento de texto y un enlace opcional a información adicional.
 El sistema debe almacenar tareas, que consta de los siguientes datos: un título, un período de ejecución, una carga de trabajo, una descripción y un enlace opcional. Las tareas pueden ser públicas o privadas.
+Los directores pueden crear tareas.
+Los adminstradores pueden ver las tareas creadas por los directores.

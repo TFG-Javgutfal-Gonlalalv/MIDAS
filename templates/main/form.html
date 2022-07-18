@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario texto</title>
+</head>
+<body>
+
+    <h1>Formulario NPL</h1>
+
+    <form action="/diagrama" method="post">{% csrf_token %}
+        <label for="texto">Introdude el texto: </label>
+        <textarea id="texto" name="texto"  value="Introduzca el texto"></textarea>
+        <input type="submit" value="Enviar">
+    </form>
+</body>
+</html>

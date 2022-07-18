@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Diagrama</h1>
+
+    <h3>Texto introducido</h3>
+    {{ requirements }}
+
+    <h3>Clases</h3>
+    <ul>
+
+        {%  for class in classes %}
+            <li>
+                {{ class.name }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>Atributos</h3>
+        <ul>
+
+            {%  for attribute in attributes %}
+                <li>
+                    {{ attribute.name }}
+                    : {{ attribute.class_fk.name }}
+                </li>
+            {% endfor %}
+        </ul>
+
+    <h3>Relaciones</h3>
+        <ul>
+
+            {%  for relation in relations %}
+                <li>
+                    {{ relation.class_fk_1.name }}
+                    - {{ relation.verb }} - {{ relation.class_fk_2.name }}    : {{ relation.phrase }}
+                </li>
+            {% endfor %}
+        </ul>
+</body>
+</html>

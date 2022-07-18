@@ -20,6 +20,7 @@ class Class(models.Model):
 class Attribute(models.Model):
     name = models.CharField(max_length=50)
     score = models.FloatField(null=False, default=1.0)
+    type = models.CharField(max_length=50, default="varchar(255)")
     class_fk = models.ForeignKey(Class, on_delete=models.CASCADE, null=True)
     run_fk = models.ForeignKey(Run, on_delete=models.CASCADE, null=False)
 

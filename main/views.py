@@ -1,6 +1,6 @@
-from main.nlpcd import ejecucion
-from main.models import Class
-
+from main.nlpcd import ejecucion, ejecucion_sin_solucion
+from main.models import Class, Attribute, Relation, Run
+from main.converter import convertir_run_codigo_sql
 from django.shortcuts import render, redirect
 from .forms import NewUserForm
 from django.contrib.auth import login, authenticate  # add this
@@ -12,6 +12,27 @@ from django.contrib.auth.forms import AuthenticationForm  # add this
 def homepage(request):
     return render(request, "main/index.html")
 
+
+def diagrama(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            if request.POST["texto"]:
+                documento = request.POST["texto"]
+                run = ejecucion_sin_solucion(documento, request.user)
+
+                classes = Class.objects.filter(run_fk=run)
+                attributes = Attribute.objects.filter(run_fk=run)
+                relations = Relation.objects.filter(run_fk=run)
+
+                context = {"requirements": documento, "classes": classes,"attributes": attributes, "relations": relations}
+
+
+                return render(request, "main/diagrama.html",context)
+
+        return render(request, "main/form.html")
+    return redirect("/login")
+
+
 def get_general(request):
     num = 1
     if request.user.is_authenticated:
@@ -21,10 +42,11 @@ def get_general(request):
         classes = Class.objects.filter(run_fk=run)
 
         context = {"requirements": documento, "solutions": classes.values_list(), "class_rate": class_rate,
-                   "attribute_rate": attribute_rate, "relationship_rate": relationship_rate, "general_rate": general_rate}
+                   "attribute_rate": attribute_rate, "relationship_rate": relationship_rate,
+                   "general_rate": general_rate}
         return render(request, "main/main.html", context)
     else:
-        return redirect("/")
+        return redirect("/login")
 
 
 def register_request(request):
@@ -59,3 +81,12 @@ def login_request(request):
             messages.error(request, "Invalid username or password.")
     form = AuthenticationForm()
     return render(request=request, template_name="main/login.html", context={"login_form": form})
+
+def converter(request):
+    if request.user.is_authenticated:
+        run = Run.objects.get(user_fk=request.user)
+
+        convertir_run_codigo_sql(run)
+        return render(request, "main/index.html")
+
+    return redirect("/login")

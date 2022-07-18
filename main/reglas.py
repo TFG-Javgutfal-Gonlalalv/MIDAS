@@ -61,6 +61,15 @@ def class_detection_rules(doc):
         attributes = list(set(attributes))
     phrases = doc.text.split(".")
 
+    for phrase in phrases:
+        if "Como" in phrase and ("quiero" in phrase or "deseo" in phrase):
+            final = "quiero"
+            if "deseo" in phrase:
+                final = "deseo"
+
+            for clase in classes:
+                if clase.name in phrase[0:phrase.index(final)]:
+                    clase.update_percent(20)
     #detector atributos y clase tras ":"
 
     for phrase in phrases:
@@ -133,25 +142,28 @@ def class_detection_rules(doc):
     return classes_final, relations_final
 
 def relations_detections (classes, doc):
+
     phrases = doc.text.split(".")
     nlp = spacy.load("es_core_news_lg")
     relations = []
+
     for phrase in phrases:
         first_class = None
         verb = None
         second_class =None
 
         for token in nlp(phrase):
-
+            print(token.pos_, token.dep_, token.lemma_)
             if (token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes):
                 first_class = classes[classes.index(token.lemma_)]
-            if (token.pos_ == "VERB" and token.dep_ == "ROOT"):
-                verb = token.text
-            if (token.pos_ == "NOUN" and (token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes):
+            if (token.pos_ == "VERB" and (token.dep_ == "ROOT" or token.dep_ == "acl")) and token.lemma_ != "querer" and token.lemma_ != "desear":
+                verb = token.lemma_
+            if (token.pos_ == "NOUN" and (token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes and second_class == None):
                 if first_class != None and first_class.name != token.lemma_:
                     second_class = classes[classes.index(token.lemma_)]
 
         if (first_class != None and verb != None and second_class != None):
             relations.append(Relation(first_class,second_class, verb, phrase))
 
+    print(relations)
     return relations
