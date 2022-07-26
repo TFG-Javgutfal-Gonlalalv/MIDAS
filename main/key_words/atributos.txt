@@ -22,3 +22,10 @@ concepto
 peso
 altura
 dni
+usuario
+contraseña
+nick
+estado
+móvil
+localización
+tipo

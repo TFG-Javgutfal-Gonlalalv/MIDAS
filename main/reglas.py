@@ -1,5 +1,6 @@
 from main.utils import get_key_words
 from main.clases import Class, Attribute, Relation
+from main.models import Technicality, FrequentAttributes
 import spacy
 
 
@@ -18,8 +19,8 @@ def class_detection_rules(doc):
 
     words = nouns.copy()
     words_final = nouns.copy()
-    technicalities = get_key_words("main/key_words/tecnicismos.txt")
-    attributes_list = get_key_words("main/key_words/atributos.txt")
+    technicalities = list(Technicality.objects.values_list("name", flat=True))
+    attributes_list = list(FrequentAttributes.objects.values_list("name", flat=True))
     classes = []
     attributes = []
     for word in words:
@@ -88,12 +89,6 @@ def class_detection_rules(doc):
                                 el = list_classes[0]
                                 el.update_percent(-50)
 
-    classes_final = []
-    for clase in classes:
-
-        if clase.percent >= 0:
-            classes_final.append(clase)
-
     for phrase in phrases:
         if "de cada" in phrase:
             before = phrase[0:phrase.index("de cada")]
@@ -138,6 +133,11 @@ def class_detection_rules(doc):
                     if clase_objetivo is not None:
                         clase_objetivo.add_update_attribute(attribute,20)
 
+    classes_final = []
+    for clase in classes:
+
+        if clase.percent >= 0:
+            classes_final.append(clase)
     relations_final = relations_detections(classes_final,doc)
     return classes_final, relations_final
 

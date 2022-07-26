@@ -1,0 +1,3 @@
+Los libros son comprados por los clientes.
+De los clientes nos interesa guardar los siguientes atributos: nombre, apellidos, email, usuario y contraseña.
+También queremos saber el título, precio, número de páginas de cada libro.

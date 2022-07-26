@@ -2,7 +2,7 @@ import difflib
 import datetime
 
 from main.clases import Class
-from main.models import Class, Attribute, Relation
+from main.models import Class, Attribute, Relation, FrequentAttributes
 
 def get_key_words(file: str) -> set:
     f = open(file, 'r', encoding='utf-8')
@@ -75,7 +75,12 @@ def creation_clasess_attributes_relations(clasess,relations, run):
         clase_bd.save()
 
         for attribute in clase.attributes.items():
-            attribute_bd = Attribute(name=attribute[0].name, score=attribute[1],run_fk=run,class_fk=clase_bd)
+            type = "varchar(50)"
+            if attribute[0].name in list(FrequentAttributes.objects.values_list("name",flat=True)):
+                index = list(FrequentAttributes.objects.values_list("name",flat=True)).index(attribute[0].name)
+                type = list(FrequentAttributes.objects.values_list("name", "type"))[index][1]
+            attribute_bd = Attribute(name=attribute[0].name, score=attribute[1],run_fk=run,class_fk=clase_bd,
+                                     type=type)
             attribute_bd.save()
 
     for relation in relations:

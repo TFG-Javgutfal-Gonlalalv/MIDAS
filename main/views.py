@@ -1,5 +1,5 @@
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
-from main.models import Class, Attribute, Relation, Run
+from main.models import Class, Attribute, Relation, Run, FrequentAttributes
 from main.converter import convertir_run_codigo_sql
 from django.shortcuts import render, redirect
 from .forms import NewUserForm
