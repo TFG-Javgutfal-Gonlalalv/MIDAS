@@ -1,14 +1,64 @@
+{% extends "base_generic.html" %}
 
-
-{% block head %}
-    <title>Index</title>
-{% endblock head %}
-
-{% block header %}
-    <h1>Homepage</h1>
-{% endblock header %}
+{% block header %}{% endblock header %}
 
 {% block content %}
-     <p><a href="{% url 'get_general' %}" class="">Con solución</a></p>
-    <p><a href="{% url 'diagrama' %}" class="">Sin solución</a></p>
+    <div id="homeCarousel" class="carousel carousel-dark slide" data-bs-ride="carousel" style="border-bottom: dimgray">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" aria-label="Slide 2" aria-current="true"></button>
+            <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" aria-label="Slide 3" class=""></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <svg class="bd-placeholder-img" width="100%" height="300px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#4dd7ff"></rect></svg>
+
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>Comienza tu experiencia</h1>
+                    <p>Somos un grupo de personas que ha decidido proponer una solución al problema de la toma de requisitos y el modelado de clases tras los mismos. Utilizamos soluciones innovadoras de procesamiento de lenguaje natural y modelos de lenguajes preentrenados a través de servicios externos que nos permite dar unos resultados increíbles a la hora de automatizar esta fase de sus proyectos.</p>
+                    <p>No esperes más para aprovechar nuestros servicios y haz tus modelados de forma más rápida y sencilla. ¡Regístrate!</p>
+                    <p><a class="btn btn-lg btn-primary" href="#">Registrarse</a></p>
+                </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <svg class="bd-placeholder-img" width="100%" height="300px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#4dd7ff"></rect></svg>
+
+            <div class="container">
+              <div class="carousel-caption">
+                <h1>Aprende a usar nuestros servicios</h1>
+                <p>En nuestra aplicación web podrá realizar todos los servicios implementados para la generación de modelados de clases y de scripts para bases de datos, tanto el sistema gratuito como el sistema de pago, pero para saber usar correctamente nuestra web, en caso de no haberla usado nunca, le recomendamos leer primero el tutorial de uso de nuestros servicios.</p>
+                <p>Pulse el siguiente enlace para acceder a nuestro tutorial de uso de nuestra aplicación web.</p>
+                <p><a class="btn btn-lg btn-primary" href="#">Tutorial de la aplicación</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <svg class="bd-placeholder-img" width="100%" height="300px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#4dd7ff"></rect></svg>
+
+            <div class="container">
+              <div class="carousel-caption">
+                <h1>Aprende a usar nuestra API</h1>
+                <p>No podíamos dejar tan innovadora solución únicamente para nuestro uso, por lo que hemos creado una API para cualquier desarrollador que desee usar nuestros servicios en su propio sistema. Eso sí, nuestra API será completamente de pago.</p>
+                <p>Accede a toda la documentación de la API en el siguiente enlace.</p>
+                <p><a class="btn btn-lg btn-primary" href="#">API Docs</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="content text-center">
+        <h2 class="mt-5">¿Ya dispone de un perfil de usuario?</h2>
+        <a class="btn btn-lg btn-primary mt-4" href="/login">Acceder</a>
+    </div>
 {% endblock content %}
