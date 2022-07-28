@@ -1,4 +1,0 @@
-19/11/2021, 01:01:11 -> doc: doc1 | class_rate: 0.8235294117647058 | attribute_rate: 0.0 | relationship_rate: 0.0 | general_rate: 0.2745098039215686 | 
-19/11/2021, 01:01:26 -> doc: doc2 | class_rate: 0.8 | attribute_rate: 0.5 | relationship_rate: 0.0 | general_rate: 0.43333333333333335 | 
-19/11/2021, 01:01:43 -> doc: doc3 | class_rate: 1.0 | attribute_rate: 0.25 | relationship_rate: 0.0 | general_rate: 0.4166666666666667 | 
-19/11/2021, 01:02:19 -> doc: doc4 | class_rate: 0.8888888888888888 | attribute_rate: 1.0 | relationship_rate: 0.0 | general_rate: 0.6296296296296297 | 

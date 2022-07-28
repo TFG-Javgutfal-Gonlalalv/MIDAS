@@ -14,7 +14,10 @@ def lista_locs(doc):
 
 
 def class_detection_rules(doc):
-    nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN" ]
+
+    lista_preposiciones = ["a", "ante","bajo", "con","contra", "de", "desde", "en", "entre", "hacia", "hasta", "para", "por","según", "sin", "so","sobre", "tras"]
+
+    nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN"]
 
 
     words = nouns.copy()
@@ -81,31 +84,35 @@ def class_detection_rules(doc):
                     clase.update_percent(20)
                     clase_objetivo = clase
 
-                    for attribute in attributes:
-                        if attribute.name in phrase[phrase.index(":"):len(phrase)]:
-                            clase_objetivo.add_update_attribute(attribute,20)
-                            list_classes = [x for x in classes if x.name == attribute.name]
-                            if len(list_classes) > 0:
-                                el = list_classes[0]
-                                el.update_percent(-50)
-
+                    if clase_objetivo is not None:
+                        for attribute in attributes:
+                            if attribute.name in phrase[phrase.index(":"):len(phrase)]:
+                                clase_objetivo.add_update_attribute(attribute,20)
+                                list_classes = [x for x in classes if x.name == attribute.name]
+                                if len(list_classes) > 0:
+                                    el = list_classes[0]
+                                    el.update_percent(-50)
+    #detector preposiciones
     for phrase in phrases:
-        if "de cada" in phrase:
-            before = phrase[0:phrase.index("de cada")]
-            after = phrase[phrase.index("de cada"):len(phrase)]
-            clase_objetivo = None
 
-            for clase in classes:
-                if clase.name in after:
-                    clase_objetivo = clase
-                    clase_objetivo.update_percent(10)
-            for attribute in attributes:
+        for token in phrase:
+            if token.text.lower() in lista_preposiciones:
+                if lista_preposiciones in phrase:
+                    before = phrase[0:phrase.index(token.text)]
+                    after = phrase[phrase.index(token.text):len(phrase)]
+                    clase_objetivo = None
 
-                if attribute.name in before:
-                    if attribute.name in attributes_list:
-                        clase_objetivo.add_update_attribute(attribute,50)
-                    else:
-                        clase_objetivo.add_update_attribute(attribute,20)
+                    for clase in classes:
+                        if clase.name in after:
+                            clase_objetivo = clase
+                            clase_objetivo.update_percent(10)
+                    for attribute in attributes:
+
+                        if attribute.name in before:
+                            if attribute.name in attributes_list:
+                                clase_objetivo.add_update_attribute(attribute,50)
+                            else:
+                                clase_objetivo.add_update_attribute(attribute,20)
 
     for phrase in phrases:
         for attribute in attributes:
@@ -153,7 +160,7 @@ def relations_detections (classes, doc):
         second_class =None
 
         for token in nlp(phrase):
-            print(token.pos_, token.dep_, token.lemma_)
+            #print(token.pos_, token.dep_, token.lemma_)
             if (token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes):
                 first_class = classes[classes.index(token.lemma_)]
             if (token.pos_ == "VERB" and (token.dep_ == "ROOT" or token.dep_ == "acl")) and token.lemma_ != "querer" and token.lemma_ != "desear":
@@ -165,5 +172,5 @@ def relations_detections (classes, doc):
         if (first_class != None and verb != None and second_class != None):
             relations.append(Relation(first_class,second_class, verb, phrase))
 
-    print(relations)
+    #print(relations)
     return relations
