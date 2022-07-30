@@ -24,12 +24,10 @@ class ClassFKs:
 def convertir_run_codigo_sql(run):
 
     classes = Class.objects.filter(run_fk=run)
-    relations = Relation.objects.filter(run_fk=run)
-
     order_classes = []
-
     classes_fk = []
 
+    #1. Creación de las clases auxiliares ClassFK
     for clase in classes:
         class_fk = ClassFKs(clase)
         relations_class = Relation.objects.filter(class_fk_1=clase)
@@ -48,11 +46,13 @@ def convertir_run_codigo_sql(run):
 
         classes_fk.append(class_fk)
 
+    #2. Reordenación de las clases según los fks
     while len(order_classes) < len(classes_fk):
         for c in classes_fk:
             if c.fks.issubset(order_classes) and c not in order_classes:
                 order_classes.append(c)
 
+    #3. Creación del script sql
     script = ""
     for c in order_classes:
         script += "CREATE TABLE "+ c.clase.name + " (\n"

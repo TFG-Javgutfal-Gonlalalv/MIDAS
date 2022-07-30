@@ -14,11 +14,11 @@ def lista_locs(doc):
 
 
 def class_detection_rules(doc):
-
-    lista_preposiciones = ["a", "ante","bajo", "con","contra", "de", "desde", "en", "entre", "hacia", "hasta", "para", "por","según", "sin", "so","sobre", "tras"]
+    nlp = spacy.load("es_core_news_lg")
+    lista_preposiciones = ["a", "ante", "bajo", "con", "contra", "de", "desde", "en", "entre", "hacia", "hasta", "para",
+                           "por", "según", "sin", "so", "sobre", "tras"]
 
     nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN"]
-
 
     words = nouns.copy()
     words_final = nouns.copy()
@@ -26,6 +26,8 @@ def class_detection_rules(doc):
     attributes_list = list(FrequentAttributes.objects.values_list("name", flat=True))
     classes = []
     attributes = []
+
+    # Reglas para la detección de clases
     for word in words:
         value = nouns.count(word)
 
@@ -65,6 +67,7 @@ def class_detection_rules(doc):
         attributes = list(set(attributes))
     phrases = doc.text.split(".")
 
+    # Regla 5 Como quiero para
     for phrase in phrases:
         if "Como" in phrase and ("quiero" in phrase or "deseo" in phrase):
             final = "quiero"
@@ -74,12 +77,18 @@ def class_detection_rules(doc):
             for clase in classes:
                 if clase.name in phrase[0:phrase.index(final)]:
                     clase.update_percent(20)
-    #detector atributos y clase tras ":"
 
+    # Reglas de atributos
+    classes_final = []
+    for clase in classes:
+        if clase.percent >= 0:
+            classes_final.append(clase)
+
+    # Regla 1 detector atributos y clase tras ":"
     for phrase in phrases:
         clase_objetivo = None
         if ":" in phrase:
-            for clase in classes:
+            for clase in classes_final:
                 if clase.name in phrase[0:phrase.index(":")]:
                     clase.update_percent(20)
                     clase_objetivo = clase
@@ -87,69 +96,101 @@ def class_detection_rules(doc):
                     if clase_objetivo is not None:
                         for attribute in attributes:
                             if attribute.name in phrase[phrase.index(":"):len(phrase)]:
-                                clase_objetivo.add_update_attribute(attribute,20)
-                                list_classes = [x for x in classes if x.name == attribute.name]
+                                clase_objetivo.add_update_attribute(attribute, 20)
+                                list_classes = [x for x in classes_final if x.name == attribute.name]
                                 if len(list_classes) > 0:
                                     el = list_classes[0]
                                     el.update_percent(-50)
-    #detector preposiciones
+    for clase in classes:
+        if clase.percent >= 0:
+            classes_final.append(clase)
+
+    # Regla 2 detector preposiciones
     for phrase in phrases:
-
-        for token in phrase:
+        list_of_prepositions_in_phrase = []
+        for token in nlp(phrase):
             if token.text.lower() in lista_preposiciones:
-                if lista_preposiciones in phrase:
-                    before = phrase[0:phrase.index(token.text)]
-                    after = phrase[phrase.index(token.text):len(phrase)]
-                    clase_objetivo = None
+                list_of_prepositions_in_phrase.append(token)
+        if len(list_of_prepositions_in_phrase) > 0:
+            classes_return, attributes_return = clases_atributos_preposiciones(nlp(phrase), list_of_prepositions_in_phrase,
+                                                                               classes_final, attributes,
+                                                                               attributes_list)
+            classes_final = classes_return
+            attributes = attributes_return
 
-                    for clase in classes:
-                        if clase.name in after:
-                            clase_objetivo = clase
-                            clase_objetivo.update_percent(10)
-                    for attribute in attributes:
+    #Regla 3 - Listado por cercanía
 
-                        if attribute.name in before:
-                            if attribute.name in attributes_list:
-                                clase_objetivo.add_update_attribute(attribute,50)
-                            else:
-                                clase_objetivo.add_update_attribute(attribute,20)
-
+    # Regla 4 Resto de atributos
     for phrase in phrases:
         for attribute in attributes:
-                if attribute.name in phrase and attribute.name in attributes_list:
-                    pos_atributo = phrase.index(attribute.name)
-                    min_pos = 100000
-                    clase_objetivo = None
-                    #print(attribute.name, " --- ", pos_atributo)
-                    for clase in classes:
-                        if clase.name in phrase:
-                            #print(clase.name, " - ",  phrase.index(clase.name))
-                            cantidad = phrase.count(clase.name)
-                            if  cantidad == 1:
-                                if abs(phrase.index(clase.name) - pos_atributo) < min_pos:
-                                    min_pos = abs(phrase.index(clase.name) - pos_atributo)
+            if attribute.name in phrase and attribute.name in attributes_list:
+                pos_atributo = phrase.index(attribute.name)
+                min_pos = 100000
+                clase_objetivo = None
+                # print(attribute.name, " --- ", pos_atributo)
+                for clase in classes:
+                    if clase.name in phrase:
+                        # print(clase.name, " - ",  phrase.index(clase.name))
+                        cantidad = phrase.count(clase.name)
+                        if cantidad == 1:
+                            if abs(phrase.index(clase.name) - pos_atributo) < min_pos:
+                                min_pos = abs(phrase.index(clase.name) - pos_atributo)
+                                clase_objetivo = clase
+                        else:
+                            indice = phrase.index(clase.name)
+                            for i in range(1, cantidad):
+                                if abs(indice - pos_atributo) < min_pos:
+                                    min_pos = abs(indice - pos_atributo)
                                     clase_objetivo = clase
-                            else:
-                                indice = phrase.index(clase.name)
-                                for i in range(1,cantidad):
-                                    if abs(indice - pos_atributo) < min_pos:
-                                        min_pos = abs(indice - pos_atributo)
-                                        clase_objetivo = clase
-                                    indice = phrase.index(clase.name, indice +1)
+                                indice = phrase.index(clase.name, indice + 1)
 
-                    if clase_objetivo is not None:
-                        clase_objetivo.add_update_attribute(attribute,20)
+                if clase_objetivo is not None:
+                    clase_objetivo.add_update_attribute(attribute, 20)
 
     classes_final = []
     for clase in classes:
-
         if clase.percent >= 0:
             classes_final.append(clase)
-    relations_final = relations_detections(classes_final,doc)
+    relations_final = relations_detections(classes_final, doc)
     return classes_final, relations_final
 
-def relations_detections (classes, doc):
 
+def clases_atributos_preposiciones(phrase, preps, classes, attributes, attributes_list):
+    for prep in preps:
+        print("phrase: ", phrase, " preposicion: ", prep)
+        attribute_found = False
+        if prep.i - 10 > 0:
+            before = phrase[prep.i - 10:prep.i]
+        else:
+            before = phrase[0:prep.i]
+        if prep.i + 5 > len(phrase):
+            after = phrase[prep.i:len(phrase)]
+        else:
+            after = phrase[prep.i: prep.i + 5]
+
+        clase_objetivo = None
+
+        for clase in classes:
+            if clase.name in after.text:
+                clase_objetivo = clase
+                clase_objetivo.update_percent(10)
+        print("clase_objetivo: ",clase_objetivo, "after: ", after)
+        if clase_objetivo is not None:
+            for attribute in attributes:
+
+                if attribute.name in before.text and attribute.name not in list(map(lambda x: x.name, classes)):
+                    attribute_found = True
+                    if attribute.name in attributes_list:
+                        clase_objetivo.add_update_attribute(attribute, 50)
+                    else:
+                        clase_objetivo.add_update_attribute(attribute, 10)
+        if clase_objetivo is not None and attribute_found:
+            print("phrase: ",phrase, " preposicion: ", prep, "\nclasses: ", classes, "\nttributes: ", attributes)
+            break
+    return classes, attributes
+
+
+def relations_detections(classes, doc):
     phrases = doc.text.split(".")
     nlp = spacy.load("es_core_news_lg")
     relations = []
@@ -157,20 +198,22 @@ def relations_detections (classes, doc):
     for phrase in phrases:
         first_class = None
         verb = None
-        second_class =None
+        second_class = None
 
         for token in nlp(phrase):
-            #print(token.pos_, token.dep_, token.lemma_)
+            # print(token.pos_, token.dep_, token.lemma_)
             if (token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes):
                 first_class = classes[classes.index(token.lemma_)]
-            if (token.pos_ == "VERB" and (token.dep_ == "ROOT" or token.dep_ == "acl")) and token.lemma_ != "querer" and token.lemma_ != "desear":
+            if (token.pos_ == "VERB" and (
+                    token.dep_ == "ROOT" or token.dep_ == "acl")) and token.lemma_ != "querer" and token.lemma_ != "desear":
                 verb = token.lemma_
-            if (token.pos_ == "NOUN" and (token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes and second_class == None):
+            if (token.pos_ == "NOUN" and (
+                    token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes and second_class == None):
                 if first_class != None and first_class.name != token.lemma_:
                     second_class = classes[classes.index(token.lemma_)]
 
         if (first_class != None and verb != None and second_class != None):
-            relations.append(Relation(first_class,second_class, verb, phrase))
+            relations.append(Relation(first_class, second_class, verb, phrase))
 
-    #print(relations)
+    # print(relations)
     return relations

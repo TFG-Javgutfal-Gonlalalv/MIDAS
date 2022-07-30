@@ -7,3 +7,5 @@ El bibliotecario adjunto se encarga de recibir los libros y revistas devueltos.
 El contable será responsable de recibir la multa por libros vencidos.
 La multa se cobra a los estudiantes y no a los profesores.
 Los estudiantes tienen nombre, apellido y nif.
+Los libros tendrán: título, autor y fecha.
+Se deberá almacenar el nombre, apellidos, cargo y especialidad de cada profesor.
