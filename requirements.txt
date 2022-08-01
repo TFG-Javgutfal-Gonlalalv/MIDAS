@@ -6,3 +6,6 @@ django_pdb
 django-heroku
 djangorestframework
 django-rest-swagger
+requests
+gunicorn
+asgiref==3.4.1
