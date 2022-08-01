@@ -1,9 +1,7 @@
 import datetime
 
 import spacy
-
-from main.clases import Class, Attribute
-from main.models import Class, Attribute, Run, User
+from main.models import Run
 from main.reglas import class_detection_rules
 from main.utils import get_success_rate_classes, get_success_rate_attributes, creation_clasess_attributes_relations, \
     update_log
