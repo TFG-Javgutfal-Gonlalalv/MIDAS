@@ -1,7 +1,7 @@
 import datetime
 
 import spacy
-import es_core_news_sm
+#import es_core_news_sm
 from main.models import Run
 from main.reglas import class_detection_rules
 from main.utils import get_success_rate_classes, get_success_rate_attributes, creation_clasess_attributes_relations, \
@@ -9,7 +9,7 @@ from main.utils import get_success_rate_classes, get_success_rate_attributes, cr
 
 
 def ejecucion(docIn, num, user):
-    nlp = es_core_news_sm.load()
+    nlp = spacy.load("es_core_news_md")
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
@@ -36,7 +36,7 @@ def ejecucion(docIn, num, user):
 
 
 def ejecucion_sin_solucion(docIn, user):
-    nlp = es_core_news_sm.load()
+    nlp = spacy.load("es_core_news_md")
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
