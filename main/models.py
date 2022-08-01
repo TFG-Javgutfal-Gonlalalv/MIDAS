@@ -46,3 +46,7 @@ class Technicality(models.Model):
 class FrequentAttributes(models.Model):
     name = models.CharField(max_length=50)
     type = models.CharField(max_length=40, default="varchar(50)")
+
+
+class Prepositions(models.Model):
+    name = models.CharField(max_length=50)

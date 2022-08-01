@@ -1,6 +1,6 @@
 from main.utils import get_key_words
 from main.clases import Class, Attribute, Relation
-from main.models import Technicality, FrequentAttributes
+from main.models import Technicality, FrequentAttributes, Prepositions
 import spacy
 
 
@@ -15,8 +15,7 @@ def lista_locs(doc):
 
 def class_detection_rules(doc):
     nlp = spacy.load("es_core_news_lg")
-    lista_preposiciones = ["a", "ante", "bajo", "con", "contra", "de", "desde", "en", "entre", "hacia", "hasta", "para",
-                           "por", "según", "sin", "so", "sobre", "tras"]
+    lista_preposiciones = list(Prepositions.objects.values_list("name", flat=True))
 
     nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN"]
 
@@ -112,9 +111,9 @@ def class_detection_rules(doc):
             if token.text.lower() in lista_preposiciones:
                 list_of_prepositions_in_phrase.append(token)
         if len(list_of_prepositions_in_phrase) > 0:
-            classes_return, attributes_return = clases_atributos_preposiciones(nlp(phrase), list_of_prepositions_in_phrase,
-                                                                               classes_final, attributes,
-                                                                               attributes_list)
+            classes_return, attributes_return = \
+                clases_atributos_preposiciones(nlp(phrase), list_of_prepositions_in_phrase, classes_final,
+                                               attributes, attributes_list)
             classes_final = classes_return
             attributes = attributes_return
 
@@ -155,6 +154,39 @@ def class_detection_rules(doc):
     return classes_final, relations_final
 
 
+def detector_lista_atributos_frase(phrase,classes,attributes,attributes_list):
+
+    if "," not in phrase and "y" in phrase:
+        index_y = 0
+        words = []
+        for token in phrase:
+            if token == "y":
+                index_y = token.i
+                break
+
+        words.append(phrase[index_y - 1])
+        words.append(phrase[index_y + 1])
+
+    elif "," in phrase and "y" in phrase:
+
+        index_y = 0
+        words = []
+        for token in phrase:
+            if token == "y":
+                index_y = token.i
+                break
+
+        words.append(phrase[index_y - 1])
+        words.append(phrase[index_y + 1])
+
+        index_y -= 2
+        while index_y > 0:
+            if phrase[index_y].text == ",":
+                words.append(phrase[index_y-1])
+                index_y -= 2
+
+    print(words)
+
 def clases_atributos_preposiciones(phrase, preps, classes, attributes, attributes_list):
     for prep in preps:
         print("phrase: ", phrase, " preposicion: ", prep)
@@ -185,7 +217,7 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
                     else:
                         clase_objetivo.add_update_attribute(attribute, 10)
         if clase_objetivo is not None and attribute_found:
-            print("phrase: ",phrase, " preposicion: ", prep, "\nclasses: ", classes, "\nttributes: ", attributes)
+            print("phrase: ",phrase, " preposicion: ", prep)
             break
     return classes, attributes
 
