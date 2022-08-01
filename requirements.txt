@@ -3,3 +3,6 @@ matplotlib~=3.5.1
 spacy~=3.4.0
 django-crispy-forms
 django_pdb
+django-heroku
+djangorestframework
+django-rest-swagger
