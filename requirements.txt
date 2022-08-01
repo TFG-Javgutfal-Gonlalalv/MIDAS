@@ -9,3 +9,4 @@ django-rest-swagger
 requests
 gunicorn
 asgiref==3.4.1
+es-core-news-sm

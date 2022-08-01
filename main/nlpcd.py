@@ -8,7 +8,7 @@ from main.utils import get_success_rate_classes, get_success_rate_attributes, cr
 
 
 def ejecucion(docIn, num, user):
-    nlp = spacy.load("es_core_news_lg")
+    nlp = spacy.load("es_core_news_sm")
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
@@ -35,7 +35,7 @@ def ejecucion(docIn, num, user):
 
 
 def ejecucion_sin_solucion(docIn, user):
-    nlp = spacy.load("es_core_news_lg")
+    nlp = spacy.load("es_core_news_sm")
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)

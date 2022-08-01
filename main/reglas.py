@@ -14,7 +14,7 @@ def lista_locs(doc):
 
 
 def class_detection_rules(doc):
-    nlp = spacy.load("es_core_news_lg")
+    nlp = spacy.load("es_core_news_sm")
     lista_preposiciones = list(Prepositions.objects.values_list("name", flat=True))
 
     nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN"]
@@ -224,7 +224,7 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
 
 def relations_detections(classes, doc):
     phrases = doc.text.split(".")
-    nlp = spacy.load("es_core_news_lg")
+    nlp = spacy.load("es_core_news_sm")
     relations = []
 
     for phrase in phrases:
