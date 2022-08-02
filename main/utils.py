@@ -4,6 +4,7 @@ import datetime
 from main.clases import Class
 from main.models import Class, Attribute, Relation, FrequentAttributes
 
+
 def get_key_words(file: str) -> set:
     f = open(file, 'r', encoding='utf-8')
     key_words = f.read().split("\n")
@@ -67,8 +68,8 @@ def get_success_rate_attributes(doc_num: int, classes: list) -> float:
     sm = difflib.SequenceMatcher(None, sorted(attributes_sol), sorted(attribute_names))
     return sm.ratio()
 
-def creation_clasess_attributes_relations(clasess,relations, run):
 
+def creation_clasess_attributes_relations(clasess, relations, run):
     for clase in clasess:
 
         clase_bd = Class(name=clase.name, score=clase.percent, run_fk=run)
@@ -76,15 +77,24 @@ def creation_clasess_attributes_relations(clasess,relations, run):
 
         for attribute in clase.attributes.items():
             type = "varchar(50)"
-            if attribute[0].name in list(FrequentAttributes.objects.values_list("name",flat=True)):
-                index = list(FrequentAttributes.objects.values_list("name",flat=True)).index(attribute[0].name)
+            if attribute[0].name in list(FrequentAttributes.objects.values_list("name", flat=True)):
+                index = list(FrequentAttributes.objects.values_list("name", flat=True)).index(attribute[0].name)
                 type = list(FrequentAttributes.objects.values_list("name", "type"))[index][1]
-            attribute_bd = Attribute(name=attribute[0].name, score=attribute[1],run_fk=run,class_fk=clase_bd,
+            attribute_bd = Attribute(name=attribute[0].name, score=attribute[1], run_fk=run, class_fk=clase_bd,
                                      type=type)
             attribute_bd.save()
 
     for relation in relations:
-        relation_bd = Relation(class_fk_1=Class.objects.get(name=relation.class1.name, run_fk=run),
-                               class_fk_2=Class.objects.get(name=relation.class2.name, run_fk=run), verb=relation.verb,
-                                phrase=relation.phrase, run_fk=run)
+        if relation.multiplicity == "1..*":
+            relation_bd = Relation(class_fk_1=Class.objects.get(name=relation.class1.name, run_fk=run),
+                                   multiplicity_1="1",
+                                   class_fk_2=Class.objects.get(name=relation.class2.name, run_fk=run),
+                                   multiplicity_2="*", verb=relation.verb,
+                                   phrase=relation.phrase, run_fk=run)
+        else:
+            relation_bd = Relation(class_fk_1=Class.objects.get(name=relation.class1.name, run_fk=run),
+                                   class_fk_2=Class.objects.get(name=relation.class2.name, run_fk=run),
+                                   verb=relation.verb,
+                                   phrase=relation.phrase, run_fk=run)
+
         relation_bd.save()

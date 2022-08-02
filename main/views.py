@@ -20,13 +20,15 @@ def register_request(request):
             login(request, user)
             messages.success(request, "Registration successful.")
             return redirect("homepage")
-        messages.error(request, "Unsuccessful registration. Invalid information.")
+        print(form.errors)
+        return render(request=request, template_name="main/register.html", context={"register_form": form})
     form = NewUserForm()
     return render(request=request, template_name="main/register.html", context={"register_form": form})
 
 
 def login_request(request):
     if request.method == "POST":
+        context = {}
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
@@ -38,8 +40,12 @@ def login_request(request):
                 return redirect("homepage")
             else:
                 messages.error(request, "Invalid username or password.")
+                return render(request=request, template_name="main/login.html",
+                              context={"errorUserPassword": "Invalid username or password."})
         else:
             messages.error(request, "Invalid username or password.")
+            return render(request=request, template_name="main/login.html",
+                          context={"errorUserPassword": "Invalid username or password."})
     form = AuthenticationForm()
     return render(request=request, template_name="main/login.html", context={"login_form": form})
 

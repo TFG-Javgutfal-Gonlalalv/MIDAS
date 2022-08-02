@@ -39,9 +39,10 @@ class Attribute:
         return hash(self.name)
 
 class Relation:
-    def __init__(self, class1,class2,verb, phrase):
+    def __init__(self, class1,class2,verb, phrase,multiplicity):
         self.class1 = class1
         self.class2 = class2
+        self.multiplicity = multiplicity
         self.verb = verb
         self.phrase = phrase
 

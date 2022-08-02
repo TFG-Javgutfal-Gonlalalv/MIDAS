@@ -1,3 +1,4 @@
+import main.models
 from main.utils import get_key_words
 from main.clases import Class, Attribute, Relation
 from main.models import Technicality, FrequentAttributes, Prepositions
@@ -104,8 +105,16 @@ def class_detection_rules(doc):
         if clase.percent >= 0:
             classes_final.append(clase)
 
+    # Regla 3 - Listado por cercanía
+    # for phrase in phrases:
+
     # Regla 2 detector preposiciones
     for phrase in phrases:
+        attributes_return, classes_update, attributes_update = \
+            detector_lista_atributos_frase(nlp(phrase), classes, attributes, attributes_list)
+        classes_final = classes_update
+        attributes = attributes_update
+
         list_of_prepositions_in_phrase = []
         for token in nlp(phrase):
             if token.text.lower() in lista_preposiciones:
@@ -116,8 +125,6 @@ def class_detection_rules(doc):
                                                attributes, attributes_list)
             classes_final = classes_return
             attributes = attributes_return
-
-    #Regla 3 - Listado por cercanía
 
     # Regla 4 Resto de atributos
     for phrase in phrases:
@@ -154,42 +161,58 @@ def class_detection_rules(doc):
     return classes_final, relations_final
 
 
-def detector_lista_atributos_frase(phrase,classes,attributes,attributes_list):
+def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list):
+    index_y = 0
+    words = []
+    atributos_return = []
+    classes_return = []
+    if "," not in phrase.text and "y" in phrase.text:
 
-    if "," not in phrase and "y" in phrase:
-        index_y = 0
-        words = []
         for token in phrase:
-            if token == "y":
+            if token.text == "y":
                 index_y = token.i
                 break
 
-        words.append(phrase[index_y - 1])
-        words.append(phrase[index_y + 1])
+        words.append(phrase[index_y - 1].lemma_)
+        words.append(phrase[index_y + 1].lemma_)
 
-    elif "," in phrase and "y" in phrase:
+    elif "," in phrase.text and "y" in phrase.text:
 
         index_y = 0
         words = []
         for token in phrase:
-            if token == "y":
+            if token.text == "y":
                 index_y = token.i
                 break
 
-        words.append(phrase[index_y - 1])
-        words.append(phrase[index_y + 1])
+        words.append(phrase[index_y - 1].lemma_)
+        words.append(phrase[index_y + 1].lemma_)
 
         index_y -= 2
         while index_y > 0:
             if phrase[index_y].text == ",":
-                words.append(phrase[index_y-1])
+                words.append(phrase[index_y - 1].lemma_)
                 index_y -= 2
+            else:
+                break
 
-    print(words)
+    if len(words) > 0:
+        tam = len(list(set(words).intersection(set(attributes_list))))
+        if len(list(set(words).intersection(set(attributes_list)))) > 0:
+            for clase in classes:
+                if clase.name in words:
+                    clase.update_percent(-100 * tam / len(words))
+                if clase.percent > 0:
+                    classes_return.append(clase)
+            for attribute in attributes:
+                if attribute.name in words:
+                    atributos_return.append(attribute)
+    return atributos_return, classes_return, attributes
+
 
 def clases_atributos_preposiciones(phrase, preps, classes, attributes, attributes_list):
     for prep in preps:
-        print("phrase: ", phrase, " preposicion: ", prep)
+        # print("phrase: ", phrase, " preposicion: ", prep)
         attribute_found = False
         if prep.i - 10 > 0:
             before = phrase[prep.i - 10:prep.i]
@@ -206,7 +229,7 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
             if clase.name in after.text:
                 clase_objetivo = clase
                 clase_objetivo.update_percent(10)
-        print("clase_objetivo: ",clase_objetivo, "after: ", after)
+        # print("clase_objetivo: ",clase_objetivo, "after: ", after)
         if clase_objetivo is not None:
             for attribute in attributes:
 
@@ -217,7 +240,7 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
                     else:
                         clase_objetivo.add_update_attribute(attribute, 10)
         if clase_objetivo is not None and attribute_found:
-            print("phrase: ",phrase, " preposicion: ", prep)
+            # print("phrase: ",phrase, " preposicion: ", prep)
             break
     return classes, attributes
 
@@ -231,21 +254,50 @@ def relations_detections(classes, doc):
         first_class = None
         verb = None
         second_class = None
+        third_class = None
+        composicion = False
+        second_class_id = None
+        phrase_nlp = nlp(phrase)
 
-        for token in nlp(phrase):
+        for token in phrase_nlp:
             # print(token.pos_, token.dep_, token.lemma_)
-            if (token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes):
+            if token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes:
                 first_class = classes[classes.index(token.lemma_)]
             if (token.pos_ == "VERB" and (
                     token.dep_ == "ROOT" or token.dep_ == "acl")) and token.lemma_ != "querer" and token.lemma_ != "desear":
                 verb = token.lemma_
+                if verb == "contener":
+                    composicion = True
             if (token.pos_ == "NOUN" and (
-                    token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes and second_class == None):
-                if first_class != None and first_class.name != token.lemma_:
+                    token.dep_ == "obj" or token.dep_ == "nsubj") and token.lemma_ in classes and second_class is None):
+                if first_class is not None and first_class.name != token.lemma_:
                     second_class = classes[classes.index(token.lemma_)]
+                    second_class_id = token.i
+                    break
 
-        if (first_class != None and verb != None and second_class != None):
-            relations.append(Relation(first_class, second_class, verb, phrase))
+        if first_class is not None and verb is not None and second_class is not None:
+
+            #Regla 2 AND
+            if second_class_id+1 < len(phrase_nlp) and phrase_nlp[second_class_id + 1].text == "y":
+                t = phrase_nlp[second_class_id + 2]
+                print("frase: ",phrase, "  t: ", t, " pos: ", t.pos_, " dep: ", t.dep_)
+                if (t.pos_ == "NOUN" and (
+                        t.dep_ == "obj" or t.dep_ == "nsubj" or t.dep_ == "conj") and t.lemma_ in classes
+                        and second_class.name != t.lemma_ and first_class.name != t.lemma_):
+                    third_class = classes[classes.index(t.lemma_)]
+
+            if third_class is None:
+                if composicion:
+                    relations.append(Relation(first_class, second_class, verb, phrase, "1..*"))
+                else:
+                    relations.append(Relation(first_class, second_class, verb, phrase, "None"))
+            else:
+                if composicion:
+                    relations.append(Relation(first_class, second_class, verb, phrase, "1..*"))
+                    relations.append(Relation(first_class, third_class, verb, phrase, "1..*"))
+                else:
+                    relations.append(Relation(first_class, second_class, verb, phrase, "None"))
+                    relations.append(Relation(first_class, third_class, verb, phrase, "None"))
 
     # print(relations)
     return relations
