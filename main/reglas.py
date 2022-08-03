@@ -209,8 +209,8 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list)
                 if attribute.name in words:
                     atributos_return.append(attribute)
 
-    if len(atributos_return) >0:
-        print("frase: ",phrase, " atributos: ", [a.name for a in atributos_return])
+    #if len(atributos_return) >0:
+        #print("frase: ",phrase, " atributos: ", [a.name for a in atributos_return])
     return atributos_return, classes_return, attributes
 
 

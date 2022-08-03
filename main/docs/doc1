@@ -1,11 +1,12 @@
-La biblioteca de Sevilla es utilizada por los estudiantes y profesores de Informática.
-La biblioteca de Sevilla contiene libros y revistas.
+Las bibliotecas son utilizadas por los estudiantes y profesores de Informática.
+Las bibliotecas serán identificadas por un nombre, localización y tamaño.
+Las bibliotecas contienen libros y revistas.
 Los libros se pueden entregar tanto a los estudiantes como a los profesores.
 Las revistas solo se pueden enviar a los profesores.
 Los libros y revistas solo pueden ser publicados por el bibliotecario.
-El bibliotecario adjunto se encarga de recibir los libros y revistas devueltos.
-El contable será responsable de recibir la multa por libros vencidos.
-La multa se cobra a los estudiantes y no a los profesores.
+Se debe guardar el nombre y dni del bibliotecario.
+El bibliotecario se encarga de recibir los libros y revistas devueltos.
 Los estudiantes tienen nombre, apellido y nif.
 Los libros tendrán: título, autor y fecha.
+Las revistas: marca y semana.
 Se deberá almacenar el nombre, apellidos, cargo y especialidad de cada profesor.

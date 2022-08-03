@@ -1,0 +1,19 @@
+
+
+Clases:
+Biblioteca: nombre, localizacion, tamaño
+Libro: titulo, autor, fecha
+Revista: marca, semana
+Estudiante: nombre, apellido, nif
+Profesor: nombre, apellido, cargo, especialidad
+Bibliotecario: nombre, apellidos, dni
+
+Relaciones:
+Contiene: Biblioteca, Libro, multiplicidad_clase_1: *, multiplicidad_clase_2: 1
+Contiene: Biblioteca, Revista, multiplicidad_clase_1: *, multiplicidad_clase_2: 1
+Entregar: Bibliotecario, Libro, multiplicidad_clase_1: 1, multiplicidad_clase_2: 1
+Entregar: Bibliotecario, Revista, multiplicidad_clase_1: 1, multiplicidad_clase_2: 1
+Recibir: Bibliotecario, Libro, multiplicidad_clase_1: 1, multiplicidad_clase_2: 1
+Recibir: Bibliotecario, Revista, multiplicidad_clase_1: 1, multiplicidad_clase_2: 1
+Publicar: Bibliotecario, Libro, multiplicidad_clase_1: 1, multiplicidad_clase_2: 1
+Publicar: Bibliotecario, Revista, multiplicidad_clase_1: 1, multiplicidad_clase_2: 1
