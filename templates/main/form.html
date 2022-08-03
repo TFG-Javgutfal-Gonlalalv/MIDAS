@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario texto</title>
-</head>
-<body>
+{% extends "base_generic.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <h1>Introduzca sus requisitos</h1>
 
-    <h1>Formulario NPL</h1>
-
-    <form action="/diagrama" method="post">{% csrf_token %}
-        <label for="texto">Introdude el texto: </label>
-        <textarea id="texto" name="texto"  value="Introduzca el texto"></textarea>
-        <input type="submit" value="Enviar">
-    </form>
-</body>
-</html>
+        <form action="/diagrama" method="post">
+            {% csrf_token %}
+            <textarea class="form-control" id="texto" name="texto" rows="25" value="Introduzca el texto" placeholder="Introduzca los requisitos de la forma más clara posible para mejorar sus resultados"></textarea>
+            <div class="d-grid gap-2 mt-4">
+              <button class="btn btn-lg btn-primary" type="submit">Analizar requisitos</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

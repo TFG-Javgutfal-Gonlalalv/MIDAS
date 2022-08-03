@@ -2,9 +2,11 @@
 <html lang="es">
     <head>
         <meta charset="utf-8">
+        <link rel="icon" href="https://i.im.ge/2022/08/03/FC6aWz.MIDAS-Icon.png">
         <title>MIDAS</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     </head>
 
     <style>
@@ -13,7 +15,7 @@
         }
         body {
             background: rgb(255,255,255);
-            background: linear-gradient(180deg, rgba(255,255,255,1) 60%, rgba(17,201,255,1) 100%);
+            background: linear-gradient(0deg, rgba(255,255,255,1) 20%, rgba(17,201,255,1) 100%);
         }
         footer {
             position: fixed;
@@ -25,8 +27,8 @@
 
         <body>
             <main>
-                <header style="background-color: rgba(17,201,255,1)">
-                    {% block header %}{% endblock %}
+                <header style="background-color: #4dd7ff">
+                    {% include "navbar.html" %}
                 </header>
 {#              <h1>{% block title %}{% endblock %}</h1>#}
                 {% block content %}{% endblock %}
