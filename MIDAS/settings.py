@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'MIDAS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'C:/Users/Usuario/Desktop/TFG/db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

@@ -121,7 +121,7 @@ def gpt3(requisitos):
         f.write(response.choices[0].text)
         # f.write(response2.choices[0].text)
 
-@login_required(login_url='/login')
+
 def homepage(request):
     return render(request, "main/index.html")
 
