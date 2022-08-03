@@ -166,6 +166,7 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list)
     words = []
     atributos_return = []
     classes_return = []
+
     if "," not in phrase.text and "y" in phrase.text:
 
         for token in phrase:
@@ -201,12 +202,15 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list)
         if len(list(set(words).intersection(set(attributes_list)))) > 0:
             for clase in classes:
                 if clase.name in words:
-                    clase.update_percent(-100 * tam / len(words))
+                    clase.update_percent(-150 * tam / len(words))
                 if clase.percent > 0:
                     classes_return.append(clase)
             for attribute in attributes:
                 if attribute.name in words:
                     atributos_return.append(attribute)
+
+    if len(atributos_return) >0:
+        print("frase: ",phrase, " atributos: ", [a.name for a in atributos_return])
     return atributos_return, classes_return, attributes
 
 
@@ -280,7 +284,7 @@ def relations_detections(classes, doc):
             #Regla 2 AND
             if second_class_id+1 < len(phrase_nlp) and phrase_nlp[second_class_id + 1].text == "y":
                 t = phrase_nlp[second_class_id + 2]
-                print("frase: ",phrase, "  t: ", t, " pos: ", t.pos_, " dep: ", t.dep_)
+                #print("frase: ",phrase, "  t: ", t, " pos: ", t.pos_, " dep: ", t.dep_)
                 if (t.pos_ == "NOUN" and (
                         t.dep_ == "obj" or t.dep_ == "nsubj" or t.dep_ == "conj") and t.lemma_ in classes
                         and second_class.name != t.lemma_ and first_class.name != t.lemma_):

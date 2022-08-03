@@ -24,5 +24,7 @@ urlpatterns = [
     path("diagrama", mainViews.diagrama, name="diagrama"),
     path("converter", mainViews.converter, name="converter"),
     path("register", mainViews.register_request, name="register"),
-    path("login", mainViews.login_request, name="login")
+    path("login", mainViews.login_request, name="login"),
+    path("logout", mainViews.logout_request, name="logout")
+
 ]

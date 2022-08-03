@@ -5,22 +5,24 @@ from main.models import Class, Attribute, Relation, Run, FrequentAttributes
 from main.converter import convertir_run_codigo_sql
 from django.shortcuts import render, redirect
 from .forms import NewUserForm
-from django.contrib.auth import login, authenticate  # add this
+from django.contrib.auth import login, authenticate,logout  # add this
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm  # add this
 
+def logout_request(request):
+    logout(request)
+    form = AuthenticationForm()
+    return render(request=request, template_name="main/login.html", context={"login_form": form})
 
 def register_request(request):
     if request.method == "POST":
-        print("hola")
         form = NewUserForm(request.POST)
-        print(form.is_valid())
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
             return redirect("homepage")
-        print(form.errors)
+
         return render(request=request, template_name="main/register.html", context={"register_form": form})
     form = NewUserForm()
     return render(request=request, template_name="main/register.html", context={"register_form": form})
