@@ -91,7 +91,7 @@ def gpt3(requisitos):
     }\
 }'
 
-    pregunta2 = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores con formato json reducido:\n\n'
+    pregunta2 = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores con formato json minimizado:\n\n'
 
     texto = requisitos + pregunta2
     #print(texto)
@@ -138,7 +138,7 @@ def diagrama(request):
             relations = Relation.objects.filter(run_fk=run)
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            gpt3(documento)
+            #gpt3(documento)
 
             return render(request, "main/diagrama.html", context)
 
