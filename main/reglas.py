@@ -110,15 +110,16 @@ def class_detection_rules(doc):
 
     # Regla 2 detector preposiciones
     for phrase in phrases:
-        attributes_return, classes_update, attributes_update = \
-            detector_lista_atributos_frase(nlp(phrase), classes, attributes, attributes_list)
-        classes_final = classes_update
-        attributes = attributes_update
-
         list_of_prepositions_in_phrase = []
         for token in nlp(phrase):
             if token.text.lower() in lista_preposiciones:
                 list_of_prepositions_in_phrase.append(token)
+        attributes_return, classes_update, attributes_update = \
+            detector_lista_atributos_frase(nlp(phrase), classes, attributes, attributes_list,
+                                           list_of_prepositions_in_phrase)
+        classes_final = classes_update
+        attributes = attributes_update
+
         if len(list_of_prepositions_in_phrase) > 0:
             classes_return, attributes_return = \
                 clases_atributos_preposiciones(nlp(phrase), list_of_prepositions_in_phrase, classes_final,
@@ -161,7 +162,7 @@ def class_detection_rules(doc):
     return classes_final, relations_final
 
 
-def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list):
+def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list, list_of_prepositions):
     index_y = 0
     words = []
     atributos_return = []
@@ -186,20 +187,29 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list)
                 index_y = token.i
                 break
 
-        words.append(phrase[index_y - 1].lemma_)
         words.append(phrase[index_y + 1].lemma_)
-
-        index_y -= 2
+        index_y -= 1
         while index_y > 0:
-            if phrase[index_y].text == ",":
-                words.append(phrase[index_y - 1].lemma_)
-                index_y -= 2
+            if "," in phrase[index_y - 4: index_y].text:
+                if phrase[index_y - 1].text == ",":
+                    words.append(phrase[index_y].lemma_)
+                    index_y -= 2
+                else:
+                    index_comma = index_y - phrase[index_y - 4: index_y].text.index(",")
+                    atributo_compuesto = None
+                    for i in range(index_comma, index_y):
+                        if phrase[i] not in list_of_prepositions:
+                            atributo_compuesto = phrase[i].text + "_"
+                    words.append(atributo_compuesto)
+                    attributes.append(Attribute(atributo_compuesto))
+                    index_y -= (index_y - index_comma)
             else:
+                words.append(phrase[index_y].lemma_)
                 break
 
     if len(words) > 0:
         tam = len(list(set(words).intersection(set(attributes_list))))
-        if len(list(set(words).intersection(set(attributes_list)))) > 0:
+        if tam > 0:
             for clase in classes:
                 if clase.name in words:
                     clase.update_percent(-150 * tam / len(words))
@@ -209,8 +219,8 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list)
                 if attribute.name in words:
                     atributos_return.append(attribute)
 
-    #if len(atributos_return) >0:
-        #print("frase: ",phrase, " atributos: ", [a.name for a in atributos_return])
+    if len(atributos_return) > 0:
+        print("frase: ", phrase, " atributos: ", [a.name for a in atributos_return])
     return atributos_return, classes_return, attributes
 
 
@@ -281,10 +291,10 @@ def relations_detections(classes, doc):
 
         if first_class is not None and verb is not None and second_class is not None:
 
-            #Regla 2 AND
-            if second_class_id+1 < len(phrase_nlp) and phrase_nlp[second_class_id + 1].text == "y":
+            # Regla 2 AND
+            if second_class_id + 1 < len(phrase_nlp) and phrase_nlp[second_class_id + 1].text == "y":
                 t = phrase_nlp[second_class_id + 2]
-                #print("frase: ",phrase, "  t: ", t, " pos: ", t.pos_, " dep: ", t.dep_)
+                # print("frase: ",phrase, "  t: ", t, " pos: ", t.pos_, " dep: ", t.dep_)
                 if (t.pos_ == "NOUN" and (
                         t.dep_ == "obj" or t.dep_ == "nsubj" or t.dep_ == "conj") and t.lemma_ in classes
                         and second_class.name != t.lemma_ and first_class.name != t.lemma_):

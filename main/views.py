@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.decorators import login_required
 
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
@@ -60,40 +62,18 @@ def login_request(request):
 
 
 def gpt3(requisitos):
-    pregunta = '\nDevuelve las clases y los atributos de los requisitos anteriores en formato json siguiendo el siguiente formato: \
+
+    pregunta = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores cumpliendo sin excepción el siguiente formato:\
 \
-{ \
-   "clases": {\
-        "clase": {\
-            "atributos": {\
-                "atributo_1": type,\
-                "atributo_2": type\
-                ...\
-            }\
-        },\
-         "clase": {\
-            "atributos": {\
-                "atributo_1": type,\
-                "atributo_2": type\
-                ...\
-            }\
-        },\
-        ....\
-    }, \
-    "relaciones":{\
-        "relacion_1": { \
-               "clase_1",\
-               "clase_2", \
-               "multiplicidad_clase_1",\
-               "multiplicidad_clase_2"\
-               },\
-        ...\
-    }\
-}'
+Clase1: atributo1, atributo2...\
+Clase2: atributo1, atributo2...\
+Clase3: atributo1, atributo2...\
+\
+Relación1: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\
+Relación2: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\
+Relación3: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\n\n'
 
-    pregunta2 = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores con formato json minimizado:\n\n'
-
-    texto = requisitos + pregunta2
+    texto = requisitos + pregunta
     #print(texto)
     response = openai.Completion.create(
         engine="text-davinci-002",
@@ -106,7 +86,7 @@ def gpt3(requisitos):
     )
     print(response.choices[0].text)
 
-    if False:
+    if True:
         response2 = openai.Completion.create(
             engine="text-davinci-002",
             prompt=texto + response.choices[0].text,
@@ -119,7 +99,7 @@ def gpt3(requisitos):
         print(response2.choices[0].text)
     with open('main/docs/gpt3', 'w') as f:
         f.write(response.choices[0].text)
-        # f.write(response2.choices[0].text)
+        f.write(response2.choices[0].text)
 
 
 def homepage(request):
@@ -144,6 +124,26 @@ def diagrama(request):
 
     return render(request, "main/form.html")
 
+
+@login_required(login_url='/login')
+def diagrama_gpt3(request):
+    if request.method == 'POST':
+        if request.POST["texto"]:
+            documento = request.POST["texto"]
+            run = Run(text=documento, run_datetime=datetime.datetime.now(), user_fk=user)
+            run.save()
+            gpt3(documento, request.user)
+
+            classes = Class.objects.filter(run_fk=run)
+            attributes = Attribute.objects.filter(run_fk=run)
+            relations = Relation.objects.filter(run_fk=run)
+
+            context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
+            #gpt3(documento)
+
+            return render(request, "main/diagrama.html", context)
+
+    return render(request, "main/form_gpt3.html")
 
 @login_required(login_url='/login')
 def get_general(request):

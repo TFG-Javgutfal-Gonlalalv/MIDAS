@@ -7,6 +7,6 @@ Los libros y revistas solo pueden ser publicados por el bibliotecario.
 Se debe guardar el nombre y dni del bibliotecario.
 El bibliotecario se encarga de recibir los libros y revistas devueltos.
 Los estudiantes tienen nombre, apellido y nif.
-Los libros tendrán: título, autor y fecha.
+Los libros tendrán: título, fecha de publicación y autor.
 Las revistas: marca y semana.
 Se deberá almacenar el nombre, apellidos, cargo y especialidad de cada profesor.

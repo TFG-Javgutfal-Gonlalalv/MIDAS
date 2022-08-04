@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <h1>Introduzca sus requisitos (GPT-3)</h1>
+
+        <form action="/diagrama_gpt3" method="post">
+            {% csrf_token %}
+            <textarea class="form-control" id="texto" name="texto" rows="25" value="Introduzca el texto" placeholder="Introduzca los requisitos de la forma más clara posible para mejorar sus resultados"></textarea>
+            <div class="d-grid gap-2 mt-4">
+              <button class="btn btn-lg btn-primary" type="submit">Analizar requisitos</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
