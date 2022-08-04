@@ -19,8 +19,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def logout_request(request):
     logout(request)
-    form = AuthenticationForm()
-    return render(request=request, template_name="main/login.html", context={"login_form": form})
+    return render(request=request, template_name="main/index.html", context={"logout": "Se ha cerrado sesión correctamente"})
 
 
 def register_request(request):
@@ -165,3 +164,8 @@ def converter(request):
 
     convertir_run_codigo_sql(run)
     return render(request, "main/index.html")
+
+
+@login_required(login_url='/login')
+def run_details(request):
+    return render(request, "main/run_datails.html")

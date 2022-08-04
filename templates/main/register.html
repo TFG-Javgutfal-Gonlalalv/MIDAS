@@ -4,52 +4,52 @@
 
 {% load crispy_forms_tags %}
 <!--Register--> 
-<div class="container py-5">
-	<h1>Register</h1>
+<div class="container text-center py-5">
+	<h1>Registro</h1>
 	<form method="POST">
 		{% csrf_token %}
-        <div id="div_id_username" class="control-group">
-            <label for="id_username" class="control-label requiredField">
-                Username<span class="asteriskField">*</span> </label>
-            <div class="controls">
-                <input type="text" name="username" value="{% if register_form.username.value %} {{ register_form.username.value}} {% endif %}" maxlength="150" autofocus class="textinput textInput" required
-                       id="id_username">
+        <div id="div_id_username" class="control-group my-2">
+            <div class="form-floating">
+                <input class="textinput form-control" type="text" name="username" value="{% if register_form.username.value %} {{ register_form.username.value}} {% endif %}" maxlength="150" autofocus required id="id_username">
+                <label for="id_username" class="requiredField">Nombre de usuario</label>
                 <div style="font-weight: bold;">{{ register_form.errors.username.0 }} </div>
-                <p id="hint_id_username" class="help-block">Required. 150 characters or fewer. Letters, digits and
-                    @/./+/-/_ only.</p></div>
-
+                <p id="hint_id_username" class="form-text text-dark">Obligatorio. 150 caracteres o menos. Letras, dígitos y @/./+/-/_ unicamente.</p>
+            </div>
         </div>
-        <div id="div_id_email" class="control-group"><label for="id_email" class="control-label requiredField">
-            Email<span class="asteriskField">*</span> </label>
-            <div class="controls"><input type="email" name="email" value="{% if register_form.email.value %} {{ register_form.email.value }} {% endif %}" class="emailinput" required id="id_email"></div>
+        <div id="div_id_email" class="control-group my-2">
+            <div class="form-floating">
+                <input class="emailinput form-control" type="email" name="email" value="{% if register_form.email.value %} {{ register_form.email.value }} {% endif %}" required id="id_email">
+                <label for="id_email" class="requiredField">Email</label>
+                <div style="font-weight: bold;">{{ register_form.errors.email.0 }} </div>
+            </div>
         </div>
-        <div style="font-weight: bold;">{{ register_form.errors.email.0 }} </div>
-        <div id="div_id_password1" class="control-group"><label for="id_password1" class="control-label requiredField">
-            Password<span class="asteriskField">*</span> </label>
-            <div class="controls"><input type="password" name="password1" value="{% if register_form.password1.value %} {{ register_form.password1.value }} {% endif %}" autocomplete="new-password"
-                                         class="textinput textInput" required id="id_password1">
+        <div id="div_id_password1" class="control-group my-2">
+            <div class="form-floating">
+                <input class="textinput textInput form-control" type="password" name="password1" value="{% if register_form.password1.value %} {{ register_form.password1.value }} {% endif %}" autocomplete="new-password" required id="id_password1">
+                <label for="id_password1" class="requiredField">Contraseña</label>
                 <div style="font-weight: bold;">{{ register_form.errors.password1.0 }} </div>
-                <p id="hint_id_password1" class="help-block">
-                <ul>
-                    <li>Your password can’t be too similar to your other personal information.</li>
-                    <li>Your password must contain at least 8 characters.</li>
-                    <li>Your password can’t be a commonly used password.</li>
-                    <li>Your password can’t be entirely numeric.</li>
-                </ul>
-                </p> </div>
+                <p id="hint_id_password1" class="help-block form-text text-dark">
+                    Su contraseña no puede ser demasiado similar a otra información personal.<br>
+                    Su contraseña debe contener al menos 8 caracteres.<br>
+                    Su contraseña no puede ser una contraseña comunmente usada.<br>
+                    Su contraseña no puede ser en su totalidad numérica.
+                </p>
+            </div>
         </div>
-        <div id="div_id_password2" class="control-group"><label for="id_password2" class="control-label requiredField">
-            Password confirmation<span class="asteriskField">*</span> </label>
-            <div class="controls"><input type="password" name="password2" value="{% if register_form.password2.value %} {{ register_form.password2.value }} {% endif %}" autocomplete="new-password"
-                                         class="textinput textInput" required id="id_password2">
+        <div id="div_id_password2" class="control-group my-2">
+            <div class="form-floating">
+                <input class="textinput textInput form-control" type="password" name="password2" value="{% if register_form.password2.value %} {{ register_form.password2.value }} {% endif %}" autocomplete="new-password" required id="id_password2">
+                <label for="id_password2" class="requiredField">Confirmación de la contraseña</label>
                 <div style="font-weight: bold;">{{ register_form.errors.password2.0 }} </div>
-                <p id="hint_id_password2" class="help-block">Enter the same password as before, for verification.</p>
+                <p id="hint_id_password2" class="help-block form-text text-dark">Introduzca la misma contraseña que introdujo anteriormente para su verificación.</p>
             </div>
         </div>
 
-        <button class="btn btn-primary" type="submit">Register</button>
+        <div class="d-grid gap-2">
+          <button class="btn btn-lg btn-primary" type="submit">Registrarse</button>
+        </div>
 	</form>
-	<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
+	<p class="text-center my-2">Si ya dispone de una cuenta, <a href="/login">accede</a>.</p>
 </div>
 
 {% endblock %}

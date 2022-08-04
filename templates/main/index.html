@@ -18,7 +18,7 @@
                     <h1>Comienza tu experiencia</h1>
                     <p>Somos un grupo de personas que ha decidido proponer una solución al problema de la toma de requisitos y el modelado de clases tras los mismos. Utilizamos soluciones innovadoras de procesamiento de lenguaje natural y modelos de lenguajes preentrenados a través de servicios externos que nos permite dar unos resultados increíbles a la hora de automatizar esta fase de sus proyectos.</p>
                     <p>No esperes más para aprovechar nuestros servicios y haz tus modelados de forma más rápida y sencilla. ¡Regístrate!</p>
-                    <p><a class="btn btn-lg btn-primary" href="#">Registrarse</a></p>
+                    <p><a class="btn btn-lg btn-primary" href="/register">Registrarse</a></p>
                 </div>
             </div>
           </div>
@@ -56,6 +56,15 @@
           <span class="visually-hidden">Next</span>
         </button>
     </div>
+
+    {% if logout %}
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <h4 class="alert-heading">Sesión cerrada</h4>
+            {{ logout }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+    {% endif %}
 
     <div class="content text-center">
         <h2 class="mt-5">¿Ya dispone de un perfil de usuario?</h2>

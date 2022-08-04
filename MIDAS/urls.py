@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", mainViews.homepage, name="homepage"),
     path("stats", mainViews.get_general, name="get_general"),
+    path("run", mainViews.run_details, name="run_details"),
     path("diagrama", mainViews.diagrama, name="diagrama"),
     path("diagrama_gpt3", mainViews.diagrama_gpt3, name="diagrama_gpt3"),
     path("converter", mainViews.converter, name="converter"),
