@@ -2,13 +2,27 @@
 
 {% block content %}
     <!-- content -->
-    <div class="container">
-        <div id="myDiagramHolder"></div>
+    <div id="diagramContainer" class="container-fluid">
+        <h1 class="text-center">Modelado de clases</h1>
+        <div class="btn-group my-1 gap-2" role="group" aria-label="Basic example">
+          <button id="newDiagramClass" type="button" class="btn btn-lg btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg> Nueva Clase</button>
+          <button id="discardChanges" type="button" class="btn btn-lg btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
+            </svg> Deshacer Cambios</button>
+        </div>
+        <div id="myDiagramHolder" class="border border-dark rounded"></div>
     </div>
 {% endblock content %}
 
 {% block scripts %}
+
     <script type="text/javascript">
+
+        var classes = {{ classes|safe }};
+        var attributes = {{ attributes|safe }};
+        var relations = {{ relations|safe }};
 
         var namespace = joint.shapes;
 
@@ -17,35 +31,35 @@
         var paper = new joint.dia.Paper({
             el: document.getElementById('myDiagramHolder'),
             model: graph,
-            width: 1250,
-            height: 500,
+            width: $('#diagramContainer').width(),
+            height: 700,
             gridSize: 1,
             cellViewNamespace: namespace
         });
 
-        var rect = new joint.shapes.standard.Rectangle();
-        rect.position(100, 30);
-        rect.resize(100, 40);
-        rect.attr({
-            body: {
-                fill: 'blue'
-            },
-            label: {
-                text: 'Hello',
-                fill: 'white'
+        var i;
+        count = 1
+        for(i = 0; i < classes.length; i++) {
+            var distancia = 300;
+            var pos_x = (distancia*i) % ($('#diagramContainer').width()-100);
+
+            if((distancia*i) > ($('#diagramContainer').width()-100)*count){
+                count++;
             }
-        });
-        rect.addTo(graph);
+            var pos_y = 150*count;
 
-        var rect2 = rect.clone();
-        rect2.translate(300, 0);
-        rect2.attr('label/text', 'World!');
-        rect2.addTo(graph);
+            var class_name = classes[i]['name'].charAt(0).toUpperCase() + classes[i]['name'].slice(1);
 
-        var link = new joint.shapes.standard.Link();
-        link.source(rect);
-        link.target(rect2);
-        link.addTo(graph);
+            window[class_name] = load_box(graph, class_name, pos_x, pos_y);
+        }
+
+        for(i = 0; i < relations.length; i++){
+            var relation_phrase = relations[i]['phrase'];
+            var class_1 = relations[i]['class_1'].charAt(0).toUpperCase() + relations[i]['class_1'].slice(1);
+            var class_2 = relations[i]['class_2'].charAt(0).toUpperCase() + relations[i]['class_2'].slice(1);
+
+            window['relation'+i] = load_link(graph, window[class_1], window[class_2], relation_phrase);
+        }
 
     </script>
 {% endblock scripts %}

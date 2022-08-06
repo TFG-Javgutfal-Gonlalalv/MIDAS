@@ -168,4 +168,11 @@ def converter(request):
 
 @login_required(login_url='/login')
 def run_details(request):
-    return render(request, "main/run_datails.html")
+    run = Run.objects.all()[0]
+
+    classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
+    attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in Attribute.objects.filter(run_fk=run)]
+    relations = [{"class_1": r.class_fk_1.name, "class_2": r.class_fk_2.name, "phrase": r.phrase, "score": r.score} for r in Relation.objects.filter(run_fk=run)]
+
+    context = {"requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
+    return render(request, "main/run_datails.html", context)
