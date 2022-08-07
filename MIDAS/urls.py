@@ -20,6 +20,7 @@ from main import views as mainViews
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", mainViews.homepage, name="homepage"),
+    path("dashboard", mainViews.dashboard, name="dashboard"),
     path("stats", mainViews.get_general, name="get_general"),
     path("run", mainViews.run_details, name="run_details"),
     path("diagrama", mainViews.diagrama, name="diagrama"),

@@ -47,7 +47,7 @@ def login_request(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect("homepage")
+                return redirect("dashboard")
             else:
                 messages.error(request, "Invalid username or password.")
                 return render(request=request, template_name="main/login.html",
@@ -103,6 +103,17 @@ Relación3: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\n\n'
 
 def homepage(request):
     return render(request, "main/index.html")
+
+
+@login_required(login_url='/login')
+def dashboard(request):
+    actual_user = request.user
+
+    runs = Run.objects.filter(user_fk__username=actual_user)
+
+    context = {"runs": runs}
+
+    return render(request, "main/dashboard.html", context)
 
 
 @login_required(login_url='/login')
