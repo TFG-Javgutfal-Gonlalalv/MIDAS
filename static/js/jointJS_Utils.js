@@ -17,6 +17,20 @@ function load_box(graph, name, pos_x, pos_y){
     });
     rect.addTo(graph);
 
+    var boundaryTool = new joint.elementTools.Boundary();
+    var removeButton = new joint.elementTools.Remove();
+
+    var toolsView = new joint.dia.ToolsView({
+        tools: [
+            boundaryTool,
+            removeButton
+        ]
+    });
+
+    var elementView = rect.findView(paper);
+    elementView.addTools(toolsView);
+    elementView.hideTools();
+
     return rect;
 }
 
@@ -50,4 +64,14 @@ function load_link(graph, rect1, rect2, label){
     link.addTo(graph);
 
     return link;
+}
+
+function validate_and_correct_class_name(graph, class_name){
+    var graph_json = graph.toJSON();
+    for(var i = 0; i < graph_json["cells"].length; i++){
+        if((graph_json["cells"][i]["type"] === "standard.Rectangle") && (graph_json["cells"][i]["attrs"]["label"]["text"] === class_name)){
+            class_name += "_copy";
+        }
+    }
+    return class_name;
 }

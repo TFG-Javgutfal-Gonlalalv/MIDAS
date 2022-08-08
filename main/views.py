@@ -178,8 +178,8 @@ def converter(request):
 
 
 @login_required(login_url='/login')
-def run_details(request):
-    run = Run.objects.all()[0]
+def run_details(request, run_id):
+    run = Run.objects.get(id=run_id)
 
     classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
     attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in Attribute.objects.filter(run_fk=run)]

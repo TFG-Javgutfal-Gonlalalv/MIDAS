@@ -13,13 +13,6 @@
     </head>
 
     <style>
-        html {
-            height: 100%;
-        }
-        body {
-            background: rgb(255,255,255);
-            background: linear-gradient(0deg, rgba(255,255,255,1) 20%, rgba(17,201,255,1) 100%);
-        }
         footer {
             position: fixed;
             height: 55px;
@@ -28,13 +21,15 @@
         }
     </style>
 
-        <body>
+        <body style="background: rgb(69,242,252);
+            background: linear-gradient(90deg, rgba(69,242,252,0.2497373949579832) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,1) 60%, rgba(69,242,252,0.25253851540616246) 100%);">
             <main>
                 <header style="background-color: #4dd7ff">
                     {% include "navbar.html" %}
                 </header>
 {#              <h1>{% block title %}{% endblock %}</h1>#}
                 {% block content %}{% endblock %}
+                {% block modals %}{% endblock %}
             </main>
         </body>
 
