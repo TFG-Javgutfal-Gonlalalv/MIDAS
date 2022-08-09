@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.models import User
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
 from main.models import Class, Attribute, Relation, Run, FrequentAttributes
 from main.converter import convertir_run_codigo_sql
@@ -201,7 +201,7 @@ def diagrama_gpt3(request):
 
             return render(request, "main/diagrama.html", context)
 
-    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY")})
+    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user})
 
 
 @login_required(login_url='/login')
