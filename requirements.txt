@@ -11,3 +11,5 @@ asgiref==3.4.1
 spacy~=3.4.1
 openai~=0.22.1
 python-dotenv
+chronological
+stripe

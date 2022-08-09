@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class UserExtras(models.Model):
     user_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-
+    money = models.FloatField(null=False, default=0.0)
 
 class Run(models.Model):
     text = models.TextField(null=False, default="",
@@ -12,12 +12,13 @@ class Run(models.Model):
     run_datetime = models.DateTimeField(null=False, auto_now_add=True)
     log_run = models.TextField(default="")
     user_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-
+    type = models.CharField(default="nlp", max_length=5)
 
 class Class(models.Model):
     name = models.CharField(max_length=30)
     score = models.FloatField(null=False, default=1.0)
     run_fk = models.ForeignKey(Run, on_delete=models.CASCADE, null=False)
+    deleted = models.BooleanField(default=False)
 
 
 class Attribute(models.Model):

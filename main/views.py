@@ -1,5 +1,6 @@
 import datetime
 
+import stripe
 from django.contrib.auth.decorators import login_required
 
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
@@ -13,13 +14,16 @@ from django.contrib.auth.forms import AuthenticationForm  # add this
 
 import os
 import openai
+import stripe
 
+stripe.api_key= os.getenv("STRIPE_SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 def logout_request(request):
     logout(request)
-    return render(request=request, template_name="main/index.html", context={"logout": "Se ha cerrado sesión correctamente"})
+    return render(request=request, template_name="main/index.html",
+                  context={"logout": "Se ha cerrado sesión correctamente"})
 
 
 def register_request(request):
@@ -59,21 +63,32 @@ def login_request(request):
     form = AuthenticationForm()
     return render(request=request, template_name="main/login.html", context={"login_form": form})
 
+def charge(request):
+    if request.method == "POST":
+        charge = stripe.Charge.create(
+            amount=500,
+            currency="usd",
+            description="prueba de cargo",
+            source=request.POST['stripeToken']
+        )
+        return render(request, 'index.html')
 
-def gpt3(requisitos):
-
-    pregunta = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores cumpliendo sin excepción el siguiente formato:\
-\
-Clase1: atributo1, atributo2...\
-Clase2: atributo1, atributo2...\
-Clase3: atributo1, atributo2...\
-\
-Relación1: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\
-Relación2: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\
-Relación3: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\n\n'
+def gpt3(requisitos, run):
+    pregunta = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores cumpliendo sin excepción el siguiente formato:\n\n\
+Clases:\n\
+Clase1: atributo1, atributo2...\n\
+Clase2: atributo1, atributo2...\n\
+Clase3: atributo1, atributo2...\n\
+...\n\
+\n\
+Relaciones: \n\
+Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
+Clase1-Clase2:  multiplicidad_Clase1, multiplicidad_Clase2...\n\
+Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
+...\n'
 
     texto = requisitos + pregunta
-    #print(texto)
+    print(texto)
     response = openai.Completion.create(
         engine="text-davinci-002",
         prompt=texto,
@@ -85,20 +100,55 @@ Relación3: Clase1, multiplicidad_Clase1, Clase2, multiplicidad_Clase2...\n\n'
     )
     print(response.choices[0].text)
 
-    if True:
-        response2 = openai.Completion.create(
-            engine="text-davinci-002",
-            prompt=texto + response.choices[0].text,
-            temperature=0.7,
-            max_tokens=256,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
-        print(response2.choices[0].text)
-    with open('main/docs/gpt3', 'w') as f:
-        f.write(response.choices[0].text)
-        f.write(response2.choices[0].text)
+    response_prueba = "Clases:\n\
+        Biblioteca: nombre, localización, tamaño.\n\
+        Libro: título, autor, fecha.\n\
+        Revista: marca, semana.\n\
+        Estudiante: nombre, apellido, nif.\n\
+        Profesor: nombre, apellido, cargo, especialidad.\n\
+        Bibliotecario: nombre, dni.\n\n\
+        \
+        Relaciones:\n\
+        Biblioteca-Libro: 1, *\n\
+        Biblioteca-Revista: 1, *\n\
+        Bibliotecario-Biblioteca: 1, 1\n\
+        Estudiante-Libro: *, 1\n\
+        Profesor-Revista: *, 1"
+
+    lista_response = response.choices[0].text.split("\n")
+    en_clases = False
+    en_relaciones = False
+    try:
+        for i in range(0, len(lista_response)):
+            if "Clases:" in lista_response[i]:
+                en_clases = True
+            elif "Relaciones:" in lista_response[i]:
+                en_relaciones = True
+                en_clases = False
+            elif en_clases and lista_response[i] != "" and lista_response[i] != "\n":
+                clase_atributos = lista_response[i].split(":")
+                clase_bd = Class(name=str.strip(clase_atributos[0]), score=0, run_fk=run)
+                clase_bd.save()
+                # print("clase: ",str.strip(clase_atributos[0]))
+                atributos = clase_atributos[1].split(",")
+                for atributo in atributos:
+                    attribute_bd = Attribute(name=str.strip(atributo), score=0, run_fk=run, class_fk=clase_bd,
+                                             type="varchar(50)")
+                    attribute_bd.save()
+            elif en_relaciones and lista_response[i] != "" and lista_response[i] != "\n":
+                # print(lista_response[i])
+                relacion_multiplicidad = lista_response[i].split(":")
+                relacion = relacion_multiplicidad[0].split("-")
+                multiplicidad = relacion_multiplicidad[1].split(", ")
+                relation_bd = Relation(class_fk_1=Class.objects.get(name=str.strip(relacion[0]), run_fk=run),
+                                       multiplicity_1=str.strip(multiplicidad[0]),
+                                       class_fk_2=Class.objects.get(name=str.strip(relacion[1]), run_fk=run),
+                                       multiplicity_2=str.strip(multiplicidad[1]), run_fk=run)
+
+                relation_bd.save()
+    except:
+        # gpt3(requisitos, run)
+        print("error")
 
 
 def homepage(request):
@@ -117,7 +167,7 @@ def diagrama(request):
             relations = Relation.objects.filter(run_fk=run)
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            #gpt3(documento)
+            # gpt3(documento)
 
             return render(request, "main/diagrama.html", context)
 
@@ -129,20 +179,20 @@ def diagrama_gpt3(request):
     if request.method == 'POST':
         if request.POST["texto"]:
             documento = request.POST["texto"]
-            run = Run(text=documento, run_datetime=datetime.datetime.now(), user_fk=user)
+            run = Run(text=documento, run_datetime=datetime.datetime.now(), user_fk=request.user)
             run.save()
-            gpt3(documento, request.user)
+            gpt3(documento, run)
 
             classes = Class.objects.filter(run_fk=run)
             attributes = Attribute.objects.filter(run_fk=run)
             relations = Relation.objects.filter(run_fk=run)
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            #gpt3(documento)
 
             return render(request, "main/diagrama.html", context)
 
-    return render(request, "main/form_gpt3.html")
+    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY")})
+
 
 @login_required(login_url='/login')
 def get_general(request):
