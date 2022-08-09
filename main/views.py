@@ -1,6 +1,5 @@
 import datetime
 
-import stripe
 from django.contrib.auth.decorators import login_required
 
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
@@ -51,7 +50,7 @@ def login_request(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}.")
-                return redirect("homepage")
+                return redirect("dashboard")
             else:
                 messages.error(request, "Invalid username or password.")
                 return render(request=request, template_name="main/login.html",
@@ -88,7 +87,7 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
 ...\n'
 
     texto = requisitos + pregunta
-    print(texto)
+    #print(texto)
     response = openai.Completion.create(
         engine="text-davinci-002",
         prompt=texto,
@@ -156,6 +155,17 @@ def homepage(request):
 
 
 @login_required(login_url='/login')
+def dashboard(request):
+    actual_user = request.user
+
+    runs = Run.objects.filter(user_fk__username=actual_user)
+
+    context = {"runs": runs}
+
+    return render(request, "main/dashboard.html", context)
+
+
+@login_required(login_url='/login')
 def diagrama(request):
     if request.method == 'POST':
         if request.POST["texto"]:
@@ -167,7 +177,7 @@ def diagrama(request):
             relations = Relation.objects.filter(run_fk=run)
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            # gpt3(documento)
+            #gpt3(documento)
 
             return render(request, "main/diagrama.html", context)
 
@@ -217,5 +227,12 @@ def converter(request):
 
 
 @login_required(login_url='/login')
-def run_details(request):
-    return render(request, "main/run_datails.html")
+def run_details(request, run_id):
+    run = Run.objects.get(id=run_id)
+
+    classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
+    attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in Attribute.objects.filter(run_fk=run)]
+    relations = [{"class_1": r.class_fk_1.name, "class_2": r.class_fk_2.name, "phrase": r.phrase, "score": r.score} for r in Relation.objects.filter(run_fk=run)]
+
+    context = {"requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
+    return render(request, "main/run_datails.html", context)
