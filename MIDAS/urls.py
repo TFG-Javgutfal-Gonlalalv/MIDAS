@@ -16,6 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from main import views as mainViews
+from api import views as apiViews
+
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view as swagger_get_schema_view
+
+schema_view = swagger_get_schema_view(
+    openapi.Info(
+        title="MIDAS API",
+        default_version='1.0.0',
+        description="API documentation of Midas",
+
+    ),
+    public=True,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +43,11 @@ urlpatterns = [
     path("converter", mainViews.converter, name="converter"),
     path("register", mainViews.register_request, name="register"),
     path("login", mainViews.login_request, name="login"),
-    path("logout", mainViews.logout_request, name="logout")
+    path("logout", mainViews.logout_request, name="logout"),
+
+    path("api/login", apiViews.login),
+    path("api/runs", apiViews.getRuns),
+    path("api/run/<int:run_id>/", apiViews.getRunInSQL),
+    path("api/", schema_view.with_ui('swagger', cache_timeout=0), name="swagger-schema")
 
 ]

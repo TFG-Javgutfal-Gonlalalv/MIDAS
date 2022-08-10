@@ -15,7 +15,7 @@ import os
 import openai
 import stripe
 
-stripe.api_key= os.getenv("STRIPE_SECRET_KEY")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
@@ -64,6 +64,7 @@ def login_request(request):
     form = AuthenticationForm()
     return render(request=request, template_name="main/login.html", context={"login_form": form})
 
+
 def gpt3(requisitos, run):
     pregunta = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores cumpliendo sin excepción el siguiente formato:\n\n\
 Clases:\n\
@@ -79,7 +80,7 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
 ...\n'
 
     texto = requisitos + pregunta
-    #print(texto)
+    # print(texto)
     response = openai.Completion.create(
         engine="text-davinci-002",
         prompt=texto,
@@ -169,7 +170,7 @@ def diagrama(request):
             relations = Relation.objects.filter(run_fk=run)
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            #gpt3(documento)
+            # gpt3(documento)
 
             return render(request, "main/diagrama.html", context)
 
@@ -193,7 +194,9 @@ def diagrama_gpt3(request):
 
             return render(request, "main/diagrama.html", context)
 
-    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "saldo": UserExtras.objects.get(user_fk=request.user).money})
+    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user,
+                                                   "saldo": UserExtras.objects.get(user_fk=request.user).money})
+
 
 @login_required(login_url='/login')
 def payment(request):
@@ -202,7 +205,9 @@ def payment(request):
         userExtras.money += 5
         userExtras.save()
         print("pagado")
-    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "saldo":userExtras.money})
+    return render(request, "main/form_gpt3.html",
+                  {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "saldo": userExtras.money})
+
 
 @login_required(login_url='/login')
 def get_general(request):
@@ -231,8 +236,10 @@ def run_details(request, run_id):
     run = Run.objects.get(id=run_id)
 
     classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
-    attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in Attribute.objects.filter(run_fk=run)]
-    relations = [{"class_1": r.class_fk_1.name, "class_2": r.class_fk_2.name, "phrase": r.phrase, "score": r.score} for r in Relation.objects.filter(run_fk=run)]
+    attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in
+                  Attribute.objects.filter(run_fk=run)]
+    relations = [{"class_1": r.class_fk_1.name, "class_2": r.class_fk_2.name, "phrase": r.phrase, "score": r.score} for
+                 r in Relation.objects.filter(run_fk=run)]
 
     context = {"requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
     return render(request, "main/run_datails.html", context)

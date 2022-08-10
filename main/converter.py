@@ -70,4 +70,4 @@ def convertir_run_codigo_sql(run):
             script +=");"
         script += "\n\n"
 
-    print(script)
+    return script

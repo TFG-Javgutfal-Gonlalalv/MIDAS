@@ -13,3 +13,4 @@ openai~=0.22.1
 python-dotenv
 chronological
 stripe
+drf_yasg

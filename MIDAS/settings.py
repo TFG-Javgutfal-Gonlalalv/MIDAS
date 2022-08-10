@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_swagger',
+    'rest_framework.authtoken',
     'main',
     'crispy_forms',
-    'django_pdb'
+    'django_pdb',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -104,6 +107,33 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+           'rest_framework.parsers.FormParser',
+           'rest_framework.parsers.MultiPartParser',
+           'rest_framework.parsers.JSONParser',
+    ]
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+}
+
+REST_FRAMEWORK = {
+
+}
 
 
 # Internationalization
