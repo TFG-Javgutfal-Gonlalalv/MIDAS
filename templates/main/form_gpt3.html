@@ -2,16 +2,20 @@
 {% block content %}
     <div class="container mt-4">
         <h1>Introduzca sus requisitos (GPT-3)</h1>
-        <form action="/payment" method="POST">
-            <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                data-key="{{ key }}"
-                data-description="Compra palabras"
-                data-amount="500"
-                data-currency="eur"
-                data-locale="auto"
-                data-email="{{ user.email }}">
-            </script>
-        </form>
+        <div class="col-6">
+            <h4>Saldo actual: {{ saldo }} €</h4>
+            <form action="/payment" method="POST">
+                {% csrf_token %}
+                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                    data-key="{{ key }}"
+                    data-description="Compra palabras"
+                    data-amount="500"
+                    data-currency="eur"
+                    data-locale="auto"
+                    data-email="{{ user.email }}">
+                </script>
+            </form>
+        </div>
         <form action="/diagrama_gpt3" method="post">
             {% csrf_token %}
             <textarea class="form-control" id="texto" name="texto" rows="25" value="Introduzca el texto" placeholder="Introduzca los requisitos de la forma más clara posible para mejorar sus resultados"></textarea>

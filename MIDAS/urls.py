@@ -25,6 +25,7 @@ urlpatterns = [
     path("run/<int:run_id>/", mainViews.run_details, name="run_details"),
     path("diagrama", mainViews.diagrama, name="diagrama"),
     path("diagrama_gpt3", mainViews.diagrama_gpt3, name="diagrama_gpt3"),
+    path("payment", mainViews.payment, name="payment"),
     path("converter", mainViews.converter, name="converter"),
     path("register", mainViews.register_request, name="register"),
     path("login", mainViews.login_request, name="login"),

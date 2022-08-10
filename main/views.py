@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
-from main.models import Class, Attribute, Relation, Run, FrequentAttributes
+from main.models import Class, Attribute, Relation, Run, FrequentAttributes, UserExtras
 from main.converter import convertir_run_codigo_sql
 from django.shortcuts import render, redirect
 from .forms import NewUserForm
@@ -32,7 +32,9 @@ def register_request(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful.")
-            return redirect("homepage")
+            userExtras = UserExtras(user_fk=user, money=0)
+            userExtras.save()
+            return redirect("dashboard")
 
         return render(request=request, template_name="main/register.html", context={"register_form": form})
     form = NewUserForm()
@@ -61,16 +63,6 @@ def login_request(request):
                           context={"errorUserPassword": "Invalid username or password."})
     form = AuthenticationForm()
     return render(request=request, template_name="main/login.html", context={"login_form": form})
-
-def charge(request):
-    if request.method == "POST":
-        charge = stripe.Charge.create(
-            amount=500,
-            currency="usd",
-            description="prueba de cargo",
-            source=request.POST['stripeToken']
-        )
-        return render(request, 'index.html')
 
 def gpt3(requisitos, run):
     pregunta = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores cumpliendo sin excepción el siguiente formato:\n\n\
@@ -201,8 +193,16 @@ def diagrama_gpt3(request):
 
             return render(request, "main/diagrama.html", context)
 
-    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user})
+    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "saldo": UserExtras.objects.get(user_fk=request.user).money})
 
+@login_required(login_url='/login')
+def payment(request):
+    if request.method == "POST":
+        userExtras = UserExtras.objects.get(user_fk=request.user)
+        userExtras.money += 5
+        userExtras.save()
+        print("pagado")
+    return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "saldo":userExtras.money})
 
 @login_required(login_url='/login')
 def get_general(request):
