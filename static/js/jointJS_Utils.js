@@ -66,6 +66,15 @@ function load_link(graph, rect1, rect2, label){
     return link;
 }
 
+function updateClass(graph, cell_id, new_class_name){
+    if(!(new_class_name == undefined || new_class_name == null || new_class_name === '')){
+        var cell_to_update = graph.getCell(cell_id);
+        new_class_name = validate_and_correct_class_name(graph, new_class_name);
+        // console.log(cell_to_update);
+        cell_to_update.attr({text: { text: new_class_name }, label: { text: new_class_name }});
+    }
+}
+
 function validate_and_correct_class_name(graph, class_name){
     var graph_json = graph.toJSON();
     for(var i = 0; i < graph_json["cells"].length; i++){

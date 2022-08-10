@@ -6,11 +6,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
+          <input type="hidden" id="cell_id">
           <input id="class_name_input" class="form-control" type="text">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateClass(graph, document.getElementById('cell_id').value, document.getElementById('class_name_input').value);">Guardar</button>
       </div>
     </div>
   </div>
