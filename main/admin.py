@@ -42,7 +42,8 @@ class ClassAdmin(admin.ModelAdmin):
     list_display = ("name",)
     list_filter = ("name",)
 
+
 @admin.register(UserExtras)
 class ClassAdmin(admin.ModelAdmin):
-    list_display = ("user_fk","peticiones")
-    list_filter = ("user_fk","peticiones")
+    list_display = ("user_fk", "peticiones")
+    list_filter = ("user_fk", "peticiones")
