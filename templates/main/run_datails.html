@@ -16,6 +16,7 @@
 
 {% block modals %}
     {% include "modals/class_name_modal.html" %}
+    {% include "modals/links_modal.html" %}
 {% endblock modals %}
 
 {% block scripts %}
@@ -24,6 +25,20 @@
 
         function randomIntFromInterval(min, max) { // min and max included
           return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function openCreateLink(){
+            addOptionToSelect("class_1_link", "", "Seleccione...");
+            addOptionToSelect("class_2_link", "", "Seleccione...");
+
+            for(var i = 0; i < graph_json["cells"].length; i++){
+                if(graph_json["cells"][i]["type"] === "standard.Rectangle"){
+                    var class_name_in_graph = graph_json["cells"][i]["attrs"]["label"]["text"].split('\n--------------------\n')[0];
+
+                    addOptionToSelect("class_1_link", class_name_in_graph, class_name_in_graph);
+                    addOptionToSelect("class_2_link", class_name_in_graph, class_name_in_graph);
+                }
+            }
         }
 
         var classes = {{ classes|safe }};
@@ -49,7 +64,7 @@
 
             var class_name = classes[i]['name'].charAt(0).toUpperCase() + classes[i]['name'].slice(1);
 
-            window[class_name] = load_box(graph, class_name, randomIntFromInterval(0, $('#diagramContainer').width()-100), randomIntFromInterval(0, 600));
+            window[class_name] = load_box(graph, class_name, randomIntFromInterval(0, $('#diagramContainer').width()-150), randomIntFromInterval(0, 600));
         }
 
         for(i = 0; i < relations.length; i++){
@@ -70,10 +85,27 @@
 
         paper.on('element:pointerdblclick', function(eleView) {
             var myModal = new bootstrap.Modal(document.getElementById('classNameModal'))
-            var class_name_value = eleView.model.attributes.attrs.label.text
+            var class_name_value = eleView.model.attributes.attrs.label.text.split('--------------------')[0];
             $('#class_name_input').val(class_name_value);
             window["editing_class"] = eleView.model;
-            $('#classNameModal #cell_id').val(window["editing_class"].cid)
+            $('#classNameModal #cell_id').val(window["editing_class"].id)
+            myModal.show();
+        });
+
+        paper.on('link:pointerdblclick', function(linkView) {
+            var myModal = new bootstrap.Modal(document.getElementById('linksModal'));
+            var graph_json = graph.toJSON();
+            console.log(linkView);
+
+            var class_1 = graph.getCell(linkView.model.attributes.source.id).attributes.attrs.label.text.split("\n--------------------\n")[0];
+            var class_2 = graph.getCell(linkView.model.attributes.target.id).attributes.attrs.label.text.split("\n--------------------\n")[0];
+
+            $('#class_1_link').val(class_1);
+            $('#class_2_link').val(class_2);
+
+            window["editing_link"] = linkView.model;
+            $('#classNameModal #link_id').val(window["editing_link"].id)
+
             myModal.show();
         });
 
