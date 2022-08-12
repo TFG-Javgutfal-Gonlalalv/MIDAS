@@ -1,8 +1,12 @@
 import difflib
 import datetime
+import json
+import os
+
+from django.http import HttpResponse
 
 from main.clases import Class
-from main.models import Class, Attribute, Relation, FrequentAttributes
+from main.models import Class, Attribute, Relation, FrequentAttributes, Run
 
 
 def get_key_words(file: str) -> set:
@@ -98,3 +102,29 @@ def creation_clasess_attributes_relations(clasess, relations, run):
                                    phrase=relation.phrase, run_fk=run)
 
         relation_bd.save()
+
+
+def runToJson(request, run_id):
+    run = Run.objects.filter(user_fk=request.user).get(id=run_id)
+    classes = run.class_set.all()
+    jsonData = '{"clases": ['
+    for clase in classes:
+        atributos = list(clase.attribute_set.values_list("name", flat=True))
+        atributos = str(atributos)
+        atributos = atributos.replace("'", '"')
+        print(atributos)
+        jsonData += '{ "' + clase.name + '":' + atributos
+
+        jsonData += '},'
+    jsonData = jsonData[:-1]
+    jsonData += "],"
+    relaciones = run.relation_set.all()
+    jsonData += '"relaciones": ['
+    for relacion in relaciones:
+        jsonData += ' "' + relacion.class_fk_1.name + ' - ' + relacion.class_fk_2.name + '",'
+    jsonData = jsonData[:-1]
+    url = os.getenv("APP_HEROKU_URL") or "127.0.0.1:8000"
+    jsonData += '], "url": "' + url + '/run/' + str(run.id) + '"}'
+    print(jsonData)
+    jsonToPython = json.loads(jsonData)
+    return HttpResponse(json.dumps(jsonToPython), content_type="application/json")

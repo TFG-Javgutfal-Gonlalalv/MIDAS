@@ -86,7 +86,7 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
         prompt=texto,
         temperature=0.7,
         max_tokens=512,
-        top_p=1,
+        top_p=0.1,
         frequency_penalty=0,
         presence_penalty=0
     )
@@ -151,7 +151,7 @@ def homepage(request):
 def dashboard(request):
     actual_user = request.user
 
-    runs = Run.objects.filter(user_fk__username=actual_user)
+    runs = Run.objects.filter(user_fk__username=actual_user).filter(deleted=False)
 
     context = {"runs": runs}
 
@@ -170,8 +170,6 @@ def diagrama(request):
             relations = Relation.objects.filter(run_fk=run)
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            # gpt3(documento)
-
             return render(request, "main/diagrama.html", context)
 
     return render(request, "main/form.html")
@@ -233,13 +231,37 @@ def converter(request):
 
 @login_required(login_url='/login')
 def run_details(request, run_id):
-    run = Run.objects.get(id=run_id)
 
-    classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
-    attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in
-                  Attribute.objects.filter(run_fk=run)]
-    relations = [{"class_1": r.class_fk_1.name, "class_2": r.class_fk_2.name, "phrase": r.phrase, "score": r.score} for
-                 r in Relation.objects.filter(run_fk=run)]
+    try:
+        run = Run.objects.filter(user_fk=request.user).get(id=run_id)
 
-    context = {"requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
-    return render(request, "main/run_datails.html", context)
+        classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
+        attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in
+                      Attribute.objects.filter(run_fk=run)]
+        relations = [{"class_1": r.class_fk_1.name, "class_2": r.class_fk_2.name, "phrase": r.phrase, "score": r.score}
+                     for
+                     r in Relation.objects.filter(run_fk=run)]
+
+        context = {"requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
+        return render(request, "main/run_datails.html", context)
+    except:
+        runs = Run.objects.filter(user_fk__username=request.user).filter(deleted=False)
+
+        context = {"runs": runs}
+        return render(request, "main/dashboard.html", context)
+
+
+@login_required(login_url='/login')
+def delete_run(request, run_id):
+    try:
+        run = Run.objects.filter(user_fk=request.user).get(id=run_id)
+
+        run.deleted = True
+
+        run.save()
+
+        runs = Run.objects.filter(user_fk__username=request.user).filter(deleted=False)
+        context = {"runs": runs}
+        return render(request, "main/dashboard.html", context)
+    except:
+        return render(request, "main/dashboard.html", context)

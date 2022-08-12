@@ -37,6 +37,7 @@ urlpatterns = [
     path("dashboard", mainViews.dashboard, name="dashboard"),
     path("stats", mainViews.get_general, name="get_general"),
     path("run/<int:run_id>/", mainViews.run_details, name="run_details"),
+    path("delete_run/<int:run_id>/", mainViews.delete_run, name="delete_run"),
     path("diagrama", mainViews.diagrama, name="diagrama"),
     path("diagrama_gpt3", mainViews.diagrama_gpt3, name="diagrama_gpt3"),
     path("payment", mainViews.payment, name="payment"),
@@ -47,7 +48,11 @@ urlpatterns = [
 
     path("api/login", apiViews.login),
     path("api/runs", apiViews.getRuns),
-    path("api/run/<int:run_id>/", apiViews.getRunInSQL),
+    path("api/run/sql/<int:run_id>/", apiViews.getRunInSQL),
+    path("api/run/<int:run_id>/", apiViews.getRun),
+    path("api/run/delete/<int:run_id>/", apiViews.deleteRun),
+    path("api/nlp", apiViews.nlp),
+    path("api/gpt3", apiViews.ejecutar_gpt3),
     path("api/", schema_view.with_ui('swagger', cache_timeout=0), name="swagger-schema")
 
 ]
