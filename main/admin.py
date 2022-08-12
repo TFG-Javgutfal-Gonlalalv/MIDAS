@@ -45,4 +45,4 @@ class ClassAdmin(admin.ModelAdmin):
 @admin.register(UserExtras)
 class ClassAdmin(admin.ModelAdmin):
     list_display = ("user_fk","peticiones")
-    list_filter = ("name","peticiones")
+    list_filter = ("user_fk","peticiones")
