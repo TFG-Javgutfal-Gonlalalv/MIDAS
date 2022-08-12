@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
 from main.converter import convertir_run_codigo_sql
-from main.models import Run
+from main.models import Run, UserExtras
 from main.views import gpt3
 from main.nlpcd import ejecucion_sin_solucion
 from main.utils import runToJson
@@ -103,18 +103,24 @@ def nlp(request):
 @renderer_classes([JSONRenderer, HTMLFormRenderer])
 def ejecutar_gpt3(request):
     if request.method == "POST":
-        #try:
+        try:
             if request.body:
+                if UserExtras.objects.get(user_fk=request.user).peticiones < 1:
+                    return Response("Adquiera más peticiones en la web")
                 documento = request.body.decode('utf-8', 'ignore')
                 run = Run(text=documento, run_datetime=datetime.datetime.now(), user_fk=request.user)
                 run.save()
                 gpt3(documento, run)
 
+                userExtras = UserExtras.objects.get(user_fk=request.user)
+                userExtras.peticiones -= 1
+                userExtras.save()
+
                 return runToJson(request,run.id)
 
-        #except BaseException as err:
-        #    print(err)
-        #    return Response("No se ha podido ejecutar correctamente el algoritmo gpt3")
+        except BaseException as err:
+            print(err)
+            return Response("No se ha podido ejecutar correctamente el algoritmo gpt3")
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
     type=openapi.TYPE_OBJECT,

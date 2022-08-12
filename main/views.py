@@ -179,10 +179,17 @@ def diagrama(request):
 def diagrama_gpt3(request):
     if request.method == 'POST':
         if request.POST["texto"]:
+            if UserExtras.objects.get(user_fk=request.user).peticiones < 1:
+                return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user,
+                                                   "peticiones": UserExtras.objects.get(user_fk=request.user).peticiones})
             documento = request.POST["texto"]
             run = Run(text=documento, run_datetime=datetime.datetime.now(), user_fk=request.user)
             run.save()
             gpt3(documento, run)
+
+            userExtras = UserExtras.objects.get(user_fk=request.user)
+            userExtras.peticiones -= 1
+            userExtras.save()
 
             classes = Class.objects.filter(run_fk=run)
             attributes = Attribute.objects.filter(run_fk=run)
