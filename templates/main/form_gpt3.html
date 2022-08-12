@@ -3,12 +3,12 @@
     <div class="container mt-4">
         <h1>Introduzca sus requisitos (GPT-3)</h1>
         <div class="col-6">
-            <h4>Saldo actual: {{ saldo }} €</h4>
+            <h4>Peticiones disponibles: {{ peticiones }} </h4>
             <form action="/payment" method="POST">
                 {% csrf_token %}
                 <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                     data-key="{{ key }}"
-                    data-description="Compra palabras"
+                    data-description="Adquirir 10 peticiones"
                     data-amount="500"
                     data-currency="eur"
                     data-locale="auto"

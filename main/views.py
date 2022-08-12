@@ -193,18 +193,18 @@ def diagrama_gpt3(request):
             return render(request, "main/diagrama.html", context)
 
     return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user,
-                                                   "saldo": UserExtras.objects.get(user_fk=request.user).money})
+                                                   "peticiones": UserExtras.objects.get(user_fk=request.user).peticiones})
 
 
 @login_required(login_url='/login')
 def payment(request):
     if request.method == "POST":
         userExtras = UserExtras.objects.get(user_fk=request.user)
-        userExtras.money += 5
+        userExtras.peticiones += 10
         userExtras.save()
         print("pagado")
     return render(request, "main/form_gpt3.html",
-                  {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "saldo": userExtras.money})
+                  {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user, "peticiones": userExtras.peticiones})
 
 
 @login_required(login_url='/login')
