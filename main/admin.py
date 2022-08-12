@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from main.models import Class, Attribute, Relation, Run, FrequentAttributes, Prepositions, Technicality
+from main.models import Class, Attribute, Relation, Run, FrequentAttributes, Prepositions, Technicality, UserExtras
 
 admin.site.register(Run)
 
@@ -41,3 +41,8 @@ class ClassAdmin(admin.ModelAdmin):
 class ClassAdmin(admin.ModelAdmin):
     list_display = ("name",)
     list_filter = ("name",)
+
+@admin.register(UserExtras)
+class ClassAdmin(admin.ModelAdmin):
+    list_display = ("user_fk","peticiones")
+    list_filter = ("name","peticiones")
