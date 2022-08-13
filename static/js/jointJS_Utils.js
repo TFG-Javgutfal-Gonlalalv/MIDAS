@@ -78,9 +78,14 @@ function updateClass(graph, cell_id, new_class_name){
     }
 }
 
-function updateLink(graph, link_id, mult_1, mult_2){
+function updateLink(graph, mult_1, mult_2){
     if(!(mult_1 == undefined || mult_1 == null || mult_1 === '') && !(mult_2 == undefined || mult_2 == null || mult_2 === '')){
-        var link_to_update = "";
+        var link_to_update = window["editing_link"];
+
+        var class_1 = graph.getCell(link_to_update.attributes.source.id).attributes.attrs.label.text.split("\n--------------------\n")[0];
+        var class_2 = graph.getCell(link_to_update.attributes.target.id).attributes.attrs.label.text.split("\n--------------------\n")[0];
+
+        link_to_update.label(0, { attrs: { text: { text: class_1 + '_' + mult_1 + '---' + class_2 + '_' + mult_2 } } });
     }
 }
 

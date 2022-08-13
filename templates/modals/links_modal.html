@@ -6,15 +6,21 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-          <input type="hidden" id="link_id">
+          <!--<input type="hidden" id="link_id">-->
           <div class="row">
+              <div class="col">
+                  <label for="relation_text">Texto de la relación:</label>
+                  <textarea id="relation_text" class="form-control" disabled></textarea>
+              </div>
+          </div>
+          <div class="row mt-3">
             <div class="col">
                 <label for="class_1_link">Clase 1:</label>
-                <input id="class_1_link" class="form-control" disabled>
+                <input id="class_1_link" class="form-control" type="text" disabled>
             </div>
             <div class="col">
                 <label for="class_2_link">Clase 2:</label>
-                <input id="class_2_link" class="form-control" disabled>
+                <input id="class_2_link" class="form-control" type="text" disabled>
             </div>
           </div>
           <div class="row mt-3">
@@ -41,7 +47,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Eliminar</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateLink(graph, );">Guardar</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateLink(graph, document.getElementById('mult_class_1').value, document.getElementById('mult_class_2').value);">Guardar</button>
       </div>
     </div>
   </div>

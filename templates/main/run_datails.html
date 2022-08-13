@@ -95,7 +95,12 @@
         paper.on('link:pointerdblclick', function(linkView) {
             var myModal = new bootstrap.Modal(document.getElementById('linksModal'));
             var graph_json = graph.toJSON();
-            console.log(linkView);
+
+            window["editing_link"] = linkView.model;
+
+            $('#relation_text').val(window["editing_link"].attributes.labels[0].attrs.text.text.trim());
+            $('#mult_class_1').val('');
+            $('#mult_class_2').val('');
 
             var class_1 = graph.getCell(linkView.model.attributes.source.id).attributes.attrs.label.text.split("\n--------------------\n")[0];
             var class_2 = graph.getCell(linkView.model.attributes.target.id).attributes.attrs.label.text.split("\n--------------------\n")[0];
@@ -103,8 +108,7 @@
             $('#class_1_link').val(class_1);
             $('#class_2_link').val(class_2);
 
-            window["editing_link"] = linkView.model;
-            $('#classNameModal #link_id').val(window["editing_link"].id)
+            //$('#classNameModal #link_id').val(window["editing_link"].id)
 
             myModal.show();
         });
