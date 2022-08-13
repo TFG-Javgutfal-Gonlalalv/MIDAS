@@ -85,7 +85,7 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
         engine="text-davinci-002",
         prompt=texto,
         temperature=0.7,
-        max_tokens=512,
+        max_tokens=1000,
         top_p=0.1,
         frequency_penalty=0,
         presence_penalty=0
