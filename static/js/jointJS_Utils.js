@@ -2,16 +2,28 @@ function random_integer(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function load_box(graph, name, pos_x, pos_y){
+function load_box(graph, name, pos_x, pos_y, attributes=[]){
     var rect = new joint.shapes.standard.Rectangle();
+
+    var cell_height = 60;
+
+    var class_text = name + "\n--------------------\n";
+    for(var i = 0; i < attributes.length; i++){
+        if(i == attributes.length - 1){
+            class_text += attributes[i];
+        } else{
+            class_text += attributes[i] + '\n';
+        }
+    }
+
     rect.position(pos_x, pos_y);
-    rect.resize(150, 60);
+    rect.resize(150, cell_height + (15 * (attributes.length)));
     rect.attr({
         body: {
             fill: 'white'
         },
         label: {
-            text: name + "\n--------------------\n",
+            text: class_text,
             fill: 'black'
         }
     });
@@ -66,6 +78,22 @@ function load_link(graph, rect1, rect2, label){
     return link;
 }
 
+function createLink(graph, class_name_1, class_name_2, mult_1, mult_2){
+    if(!$('#new_link_error_msg').hasClass('d-none')){
+        $('#new_link_error_msg').addClass('d-none');
+    }
+    if(!(class_name_2 == undefined || class_name_2 == null || class_name_2 === '') &&
+        !(class_name_1 == undefined || class_name_1 == null || class_name_1 === '') &&
+        !(mult_1 == undefined || mult_1 == null || mult_1 === '') &&
+        !(mult_2 == undefined || mult_2 == null || mult_2 === '')){
+        var label = class_name_1 + '_' + mult_1 + '---' + class_name_2 + '_' + mult_2;
+        load_link(graph, window[class_name_1], window[class_name_2], label);
+        $('#newLinksModal').modal('hide');
+    } else {
+        $('#new_link_error_msg').removeClass('d-none');
+    }
+}
+
 function updateClass(graph, cell_id, new_class_name){
     if(!(new_class_name == undefined || new_class_name == null || new_class_name === '')){
         var cell_to_update = graph.getCell(cell_id);
@@ -75,6 +103,7 @@ function updateClass(graph, cell_id, new_class_name){
             text: new_class_name + "\n--------------------\n" },
             label: { text: new_class_name + "\n--------------------\n"
         }});
+        window[new_class_name] = cell_to_update;
     }
 }
 
@@ -87,6 +116,10 @@ function updateLink(graph, mult_1, mult_2){
 
         link_to_update.label(0, { attrs: { text: { text: class_1 + '_' + mult_1 + '---' + class_2 + '_' + mult_2 } } });
     }
+}
+
+function deleteLink(graph, link){
+    link.remove();
 }
 
 function validate_and_correct_class_name(graph, class_name){

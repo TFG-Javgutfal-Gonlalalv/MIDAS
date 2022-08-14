@@ -1,0 +1,49 @@
+<div class="modal fade" id="newLinksModal" tabindex="-1" aria-labelledby="newLinksModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header alert-primary">
+        <h5 class="modal-title" id="newLinksModalLabel">Nueva Relación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+          <div id="new_link_error_msg" class="row alert-danger mb-2 d-none">
+              <span>Debe rellenar todos los campos</span>
+          </div>
+          <div class="row">
+            <div class="col">
+                <label for="class_1_new_link">Clase 1:</label>
+                <select id="class_1_new_link" class="form-select"></select>
+            </div>
+            <div class="col">
+                <label for="class_2_new_link">Clase 2:</label>
+                <select id="class_2_new_link" class="form-select"></select>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col">
+                <label for="new_link_mult_class_1">Multiplicidad de Clase 1:</label>
+                <select id="new_link_mult_class_1" class="form-select">
+                    <option value="" selected>Seleccione...</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="*">*</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="new_link_mult_class_2">Multiplicidad de Clase 2:</label>
+                <select id="new_link_mult_class_2" class="form-select">
+                    <option value="" selected>Seleccione...</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="*">*</option>
+                </select>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="createLink(graph, document.getElementById('class_1_new_link').value, document.getElementById('class_2_new_link').value, document.getElementById('new_link_mult_class_1').value, document.getElementById('new_link_mult_class_2').value);">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

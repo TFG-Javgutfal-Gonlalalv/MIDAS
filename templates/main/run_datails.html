@@ -5,9 +5,9 @@
     <div id="diagramContainer" class="container-fluid">
         <h1 class="text-center">Modelado de clases</h1>
         <div class="btn-group my-1 gap-2" role="group" aria-label="Basic example">
-            <button id="discardChanges" type="button" class="btn btn-lg btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5z"/>
-                </svg> Deshacer Cambios
+            <button id="openNewLinksModal" type="button" onclick="openCreateLink();" class="btn btn-lg btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                </svg> Añadir relación
             </button>
         </div>
         <div id="myDiagramHolder" class="border border-dark rounded"></div>
@@ -16,6 +16,7 @@
 
 {% block modals %}
     {% include "modals/class_name_modal.html" %}
+    {% include "modals/new_link_modal.html" %}
     {% include "modals/links_modal.html" %}
 {% endblock modals %}
 
@@ -28,17 +29,30 @@
         }
 
         function openCreateLink(){
-            addOptionToSelect("class_1_link", "", "Seleccione...");
-            addOptionToSelect("class_2_link", "", "Seleccione...");
+            if(!$('#new_link_error_msg').hasClass('d-none')){
+                $('#new_link_error_msg').addClass('d-none');
+            }
+            $('#class_1_new_link').children().remove();
+            $('#class_2_new_link').children().remove();
+            $('#new_link_mult_class_1').val('');
+            $('#new_link_mult_class_2').val('');
+
+            var myModal = new bootstrap.Modal(document.getElementById('newLinksModal'));
+            var graph_json = graph.toJSON();
+
+            addOptionToSelect("class_1_new_link", "", "Seleccione...");
+            addOptionToSelect("class_2_new_link", "", "Seleccione...");
 
             for(var i = 0; i < graph_json["cells"].length; i++){
                 if(graph_json["cells"][i]["type"] === "standard.Rectangle"){
                     var class_name_in_graph = graph_json["cells"][i]["attrs"]["label"]["text"].split('\n--------------------\n')[0];
 
-                    addOptionToSelect("class_1_link", class_name_in_graph, class_name_in_graph);
-                    addOptionToSelect("class_2_link", class_name_in_graph, class_name_in_graph);
+                    addOptionToSelect("class_1_new_link", class_name_in_graph, class_name_in_graph);
+                    addOptionToSelect("class_2_new_link", class_name_in_graph, class_name_in_graph);
                 }
             }
+
+            myModal.show();
         }
 
         var classes = {{ classes|safe }};
@@ -64,7 +78,17 @@
 
             var class_name = classes[i]['name'].charAt(0).toUpperCase() + classes[i]['name'].slice(1);
 
-            window[class_name] = load_box(graph, class_name, randomIntFromInterval(0, $('#diagramContainer').width()-150), randomIntFromInterval(0, 600));
+            var attributes_names = [];
+            for(var j = 0; j < attributes.length; j++){
+                var attribute_name = attributes[j]['name'];
+                var attribute_class = attributes[j]['class'];
+
+                if(classes[i]['name'] === attribute_class){
+                    attributes_names.push(attribute_name);
+                }
+            }
+
+            window[class_name] = load_box(graph, class_name, randomIntFromInterval(0, $('#diagramContainer').width()-150), randomIntFromInterval(0, 600), attributes_names);
         }
 
         for(i = 0; i < relations.length; i++){
@@ -94,7 +118,6 @@
 
         paper.on('link:pointerdblclick', function(linkView) {
             var myModal = new bootstrap.Modal(document.getElementById('linksModal'));
-            var graph_json = graph.toJSON();
 
             window["editing_link"] = linkView.model;
 

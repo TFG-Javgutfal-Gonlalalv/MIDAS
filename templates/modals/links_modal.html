@@ -1,8 +1,8 @@
-<div class="modal fade" id="linksModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="classNameModalLabel" aria-hidden="true">
+<div class="modal fade" id="linksModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="linksModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header alert-primary">
-        <h5 class="modal-title" id="classNameModalLabel">Editar Relación</h5>
+        <h5 class="modal-title" id="linksModalLabel">Editar Relación</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
@@ -46,7 +46,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Eliminar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="deleteLink(graph, window['editing_link'])">Eliminar</button>
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateLink(graph, document.getElementById('mult_class_1').value, document.getElementById('mult_class_2').value);">Guardar</button>
       </div>
     </div>
