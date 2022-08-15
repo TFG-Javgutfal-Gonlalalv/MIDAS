@@ -58,7 +58,7 @@ def convertir_run_codigo_sql(run):
         script += "CREATE TABLE "+ c.clase.name + " (\n"
         script += c.clase.name + "Id int NOT NULL,\n"
         for a in c.attributes:
-            script += a.name + " " + a.type + ",\n"
+            script += a.name + " " + (a.type if a.type != "string" else "varchar(255)") + ",\n"
         for fk in c.fks:
             script += fk.name + "Id int,\n"
         script += "PRIMARY KEY ("+c.clase.name + "Id)"

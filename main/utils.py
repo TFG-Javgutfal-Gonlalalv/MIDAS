@@ -80,7 +80,7 @@ def creation_clasess_attributes_relations(clasess, relations, run):
         clase_bd.save()
 
         for attribute in clase.attributes.items():
-            type = "varchar(50)"
+            type = "string"
             if attribute[0].name in list(FrequentAttributes.objects.values_list("name", flat=True)):
                 index = list(FrequentAttributes.objects.values_list("name", flat=True)).index(attribute[0].name)
                 type = list(FrequentAttributes.objects.values_list("name", "type"))[index][1]
