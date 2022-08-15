@@ -47,7 +47,7 @@ urlpatterns = [
     path("logout", mainViews.logout_request, name="logout"),
 
     path("api/login", apiViews.login),
-    path("api/runs", apiViews.getRuns),
+    path("api/runs", apiViews.getRuns, name='runs'),
     path("api/run/sql/<int:run_id>/", apiViews.getRunInSQL),
     path("api/run/<int:run_id>/", apiViews.getRun),
     path("api/run/delete/<int:run_id>/", apiViews.deleteRun),
