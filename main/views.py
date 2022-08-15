@@ -249,7 +249,7 @@ def run_details(request, run_id):
                      for
                      r in Relation.objects.filter(run_fk=run)]
 
-        context = {"requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
+        context = {"run_id": run_id, "requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
         return render(request, "main/run_datails.html", context)
     except:
         runs = Run.objects.filter(user_fk__username=request.user).filter(deleted=False)

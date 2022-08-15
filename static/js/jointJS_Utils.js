@@ -2,10 +2,15 @@ function random_integer(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getCellHeight(attributes=[]){
+    var cell_height = 60;
+    return (cell_height + (15 * (attributes.length)));
+}
+
 function load_box(graph, name, pos_x, pos_y, attributes=[]){
     var rect = new joint.shapes.standard.Rectangle();
 
-    var cell_height = 60;
+    var cell_height = getCellHeight(attributes);
 
     var class_text = name + "\n--------------------\n";
     for(var i = 0; i < attributes.length; i++){
@@ -17,7 +22,7 @@ function load_box(graph, name, pos_x, pos_y, attributes=[]){
     }
 
     rect.position(pos_x, pos_y);
-    rect.resize(150, cell_height + (15 * (attributes.length)));
+    rect.resize(200, cell_height);
     rect.attr({
         body: {
             fill: 'white'
@@ -94,15 +99,30 @@ function createLink(graph, class_name_1, class_name_2, mult_1, mult_2){
     }
 }
 
-function updateClass(graph, cell_id, new_class_name){
+function updateClass(graph, cell_id, new_class_name="", attribute_names=[], attribute_types=[]){
     if(!(new_class_name == undefined || new_class_name == null || new_class_name === '')){
         var cell_to_update = graph.getCell(cell_id);
-        new_class_name = validate_and_correct_class_name(graph, new_class_name);
+        new_class_name = validate_and_correct_class_name(graph, new_class_name, cell_to_update.attributes.attrs.label.text.split("\n--------------------\n")[0]);
         // console.log(cell_to_update);
+
+        var new_cell_text = new_class_name + "\n--------------------\n";
+        var attributes_added = [];
+        for(var i = 0; i < attribute_names.length; i++){
+            if(attribute_names[i] != "" && attributes_added.indexOf(attribute_names[i]) == -1){
+                var salto = '\n';
+                if(i == 0){
+                    salto = '';
+                }
+                new_cell_text += salto + attribute_names[i] + ': ' + attribute_types[i];
+                attributes_added.push(attribute_names[i]);
+            }
+        }
+
         cell_to_update.attr({text: {
-            text: new_class_name + "\n--------------------\n" },
-            label: { text: new_class_name + "\n--------------------\n"
-        }});
+            text: new_cell_text },
+            label: { text: new_cell_text }
+        });
+        cell_to_update.resize(200, getCellHeight(attributes_added))
         window[new_class_name] = cell_to_update;
     }
 }
@@ -122,24 +142,63 @@ function deleteLink(graph, link){
     link.remove();
 }
 
-function validate_and_correct_class_name(graph, class_name){
-    var graph_json = graph.toJSON();
+function validate_and_correct_class_name(graph, class_name, previous_name){
+    if(class_name != previous_name) {
+        var graph_json = graph.toJSON();
 
-    var class_in_graph = [];
-    for(var i = 0; i < graph_json["cells"].length; i++){
-        if(graph_json["cells"][i]["type"] === "standard.Rectangle"){
-            class_in_graph.push(graph_json["cells"][i]["attrs"]["label"]["text"].split('\n--------------------\n')[0]);
+        var class_in_graph = [];
+        for (var i = 0; i < graph_json["cells"].length; i++) {
+            if (graph_json["cells"][i]["type"] === "standard.Rectangle") {
+                class_in_graph.push(graph_json["cells"][i]["attrs"]["label"]["text"].split('\n--------------------\n')[0]);
+            }
         }
-    }
 
-    var contains_name = true;
-    while(contains_name){
-        if(class_in_graph.indexOf(class_name) == -1){
-            contains_name = false;
-        } else {
-            class_name += "_copy";
+        var contains_name = true;
+        while (contains_name) {
+            if (class_in_graph.indexOf(class_name) == -1) {
+                contains_name = false;
+            } else {
+                class_name += "_copy";
+            }
         }
     }
 
     return class_name;
+}
+
+function save_graph(graph=new joint.dia.Graph({}, { cellNamespace: joint.shapes })){
+    var cells = [];
+    var links = [];
+
+    var graph_elements = graph.attributes.cells.models;
+    for(var i = 0; i < graph_elements.length; i++){
+        var element = graph_elements[i];
+        if(element.attributes.type == "standard.Rectangle"){
+            var ele_text_split = element.attributes.attrs.label.text.split('\n--------------------\n');
+            var attributes_split = ele_text_split[1].split('\n')
+
+            var class_attributes = [];
+            for(var j = 0; j < attributes_split.length; j++){
+                if(attributes_split[j].split(': ')[0] != '') {
+                    class_attributes.push({
+                        "name": attributes_split[j].split(': ')[0],
+                        "type": attributes_split[j].split(': ')[1]
+                    });
+                }
+            }
+
+            var cell = {
+                "name": ele_text_split[0],
+                "attributes": class_attributes
+            };
+            cells.push(cell);
+        } else {
+            var link = {
+
+            };
+            links.push(link);
+        }
+    }
+
+    console.log(cells);
 }

@@ -2,15 +2,17 @@
 
 {% block content %}
     <!-- content -->
+    <input type="hidden" value="{{ run_id }}">
     <div id="diagramContainer" class="container-fluid">
         <h1 class="text-center">Modelado de clases</h1>
-        <div class="btn-group my-1 gap-2" role="group" aria-label="Basic example">
-            <button id="openNewLinksModal" type="button" onclick="openCreateLink();" class="btn btn-lg btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-                </svg> Añadir relación
-            </button>
-        </div>
+        <button id="openNewLinksModal" type="button" onclick="openCreateLink();" class="btn btn-lg btn-primary my-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+            </svg> Añadir relación
+        </button>
         <div id="myDiagramHolder" class="border border-dark rounded"></div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-lg btn-primary mt-2" onclick="save_graph(graph);">Guardar Diagrama</button>
+        </div>
     </div>
 {% endblock content %}
 
@@ -80,7 +82,7 @@
 
             var attributes_names = [];
             for(var j = 0; j < attributes.length; j++){
-                var attribute_name = attributes[j]['name'];
+                var attribute_name = attributes[j]['name'] + ': ' + attributes[j]['type'];
                 var attribute_class = attributes[j]['class'];
 
                 if(classes[i]['name'] === attribute_class){
@@ -88,7 +90,7 @@
                 }
             }
 
-            window[class_name] = load_box(graph, class_name, randomIntFromInterval(0, $('#diagramContainer').width()-150), randomIntFromInterval(0, 600), attributes_names);
+            window[class_name] = load_box(graph, class_name, randomIntFromInterval(0, $('#diagramContainer').width()-200), randomIntFromInterval(0, 600), attributes_names);
         }
 
         for(i = 0; i < relations.length; i++){
@@ -108,11 +110,22 @@
         });
 
         paper.on('element:pointerdblclick', function(eleView) {
+            $('#attributes_container').children().remove();
+
             var myModal = new bootstrap.Modal(document.getElementById('classNameModal'))
-            var class_name_value = eleView.model.attributes.attrs.label.text.split('--------------------')[0];
+            var ele_text_split = eleView.model.attributes.attrs.label.text.split('\n--------------------\n');
+            var class_name_value = ele_text_split[0];
+            var attributes_from_class = ele_text_split[1].split('\n');
+
+            for(var i = 0; i < attributes_from_class.length; i++){
+                if(attributes_from_class[i] != ''){
+                    createAttributeInput($('#attributes_container'), attributes_from_class[i].split(': ')[0], attributes_from_class[i].split(': ')[1]);
+                }
+            }
+
             $('#class_name_input').val(class_name_value);
             window["editing_class"] = eleView.model;
-            $('#classNameModal #cell_id').val(window["editing_class"].id)
+            $('#classNameModal #cell_id').val(window["editing_class"].id);
             myModal.show();
         });
 

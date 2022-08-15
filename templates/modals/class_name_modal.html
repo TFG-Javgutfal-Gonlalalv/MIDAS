@@ -1,17 +1,30 @@
 <div class="modal fade" id="classNameModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="classNameModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header alert-primary">
-        <h5 class="modal-title" id="classNameModalLabel">Editar Clase</h5>
+        <h5 class="modal-title" id="classNameModalLabel">Editar Clase y Atributos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
           <input type="hidden" id="cell_id">
-          <input id="class_name_input" class="form-control" type="text">
+          <div id="class_container" class="row my-2">
+              <div class="col">
+                  <input id="class_name_input" class="form-control" type="text">
+              </div>
+          </div>
+          <hr>
+          <div class="row">
+              <div class="col">
+                  <h5 class="text-center mt-1">Atributos</h5>
+              </div>
+          </div>
+          <hr>
+          <div id="attributes_container"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateClass(graph, document.getElementById('cell_id').value, document.getElementById('class_name_input').value);">Guardar</button>
+        <button type="button" class="btn btn-info" onclick="createAttributeInput($('#attributes_container'));">Añadir atributo</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateClass(graph, document.getElementById('cell_id').value, document.getElementById('class_name_input').value, getValuesFromInputs($('.attribute_name_input')), getValuesFromInputs($('.attribute_type_input')));">Guardar</button>
       </div>
     </div>
   </div>
