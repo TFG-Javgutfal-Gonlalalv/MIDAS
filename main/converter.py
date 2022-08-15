@@ -1,5 +1,6 @@
 from main.models import Class, Attribute, Relation
 
+
 class ClassFKs:
     def __init__(self, clase):
         self.clase = clase
@@ -21,13 +22,13 @@ class ClassFKs:
     def __hash__(self):
         return hash(self.clase)
 
-def convertir_run_codigo_sql(run):
 
+def convertir_run_codigo_sql(run):
     classes = Class.objects.filter(run_fk=run)
     order_classes = []
     classes_fk = []
 
-    #1. Creación de las clases auxiliares ClassFK
+    # 1. Creación de las clases auxiliares ClassFK
     for clase in classes:
         class_fk = ClassFKs(clase)
         relations_class = Relation.objects.filter(class_fk_1=clase)
@@ -46,28 +47,45 @@ def convertir_run_codigo_sql(run):
 
         classes_fk.append(class_fk)
 
-    #2. Reordenación de las clases según los fks
+    # 2. Reordenación de las clases según los fks
     while len(order_classes) < len(classes_fk):
         for c in classes_fk:
             if c.fks.issubset(order_classes) and c not in order_classes:
                 order_classes.append(c)
 
-    #3. Creación del script sql
+    # 3. Creación del script sql
     script = ""
     for c in order_classes:
-        script += "CREATE TABLE "+ c.clase.name + " (\n"
+        script += "CREATE TABLE " + c.clase.name + " (\n"
         script += c.clase.name + "Id int NOT NULL,\n"
         for a in c.attributes:
-            script += a.name + " " + (a.type if a.type != "string" else "varchar(255)") + ",\n"
+            script += a.name + " " + conversor_atributo(a.type) + ",\n"
         for fk in c.fks:
             script += fk.name + "Id int,\n"
-        script += "PRIMARY KEY ("+c.clase.name + "Id)"
+        script += "PRIMARY KEY (" + c.clase.name + "Id)"
         if (len(c.fks) == 0):
             script += "\n);"
         else:
             for fk in c.fks:
-                script += ",\n" + "FOREIGN KEY ("+ fk.name+"Id) REFERENCES "+fk.name+"("+ fk.name+"Id)\n"
-            script +=");"
+                script += ",\n" + "FOREIGN KEY (" + fk.name + "Id) REFERENCES " + fk.name + "(" + fk.name + "Id)\n"
+            script += ");"
         script += "\n\n"
 
     return script
+
+
+def conversor_atributo(tipo):
+    if tipo == "String":
+        return "varchar(255)"
+    elif tipo == "Integer":
+        return "int"
+    elif tipo == "Float":
+        return "float"
+    elif tipo == "Boolean":
+        return "bit"
+    elif tipo == "Datetime":
+        return "datetime"
+    elif tipo == "Time":
+        return "time"
+    else:
+        return "varchar(255)"
