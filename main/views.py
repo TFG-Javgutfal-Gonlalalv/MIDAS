@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -256,6 +257,21 @@ def run_details(request, run_id):
 
         context = {"runs": runs}
         return render(request, "main/dashboard.html", context)
+
+
+def update_run(request):
+    run_id = request.POST['run_id']
+    cells = json.loads(request.POST['cells'])
+    links = json.loads(request.POST['links'])
+
+    actual_run = Run.objects.get(id=run_id)
+    # new_run = Run.save(Run(text=actual_run.text))
+
+    run_classes = []
+    for cell in cells:
+        run_class = Class(name=cell['name'], score=1, run_fk=actual_run)
+
+    return dashboard(request)
 
 
 @login_required(login_url='/login')

@@ -193,12 +193,39 @@ function save_graph(graph=new joint.dia.Graph({}, { cellNamespace: joint.shapes 
             };
             cells.push(cell);
         } else {
+            var class_1 = graph.getCell(element.attributes.source.id).attributes.attrs.label.text.split('\n--------------------\n')[0];
+            var class_2 = graph.getCell(element.attributes.target.id).attributes.attrs.label.text.split('\n--------------------\n')[0];
+            var link_label = element.attributes.labels[0].attrs.text.text.trim();
             var link = {
-
+                "class_1": class_1,
+                "class_2": class_2,
+                "label": link_label
             };
             links.push(link);
         }
     }
 
-    console.log(cells);
+    var data = {
+        "run_id": $('#runId').val(),
+        "cells": JSON.stringify(cells),
+        "links": JSON.stringify(links)
+    };
+
+    let cookie = document.cookie;
+    let csrfToken = cookie.substring(cookie.indexOf('=') + 1);
+
+    $.ajax({
+        "method": "POST",
+        "url": '/update_run',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        "data": data,
+        success: function () {
+            window.location = '/dashboard'
+        }
+    });
+
+    // console.log(cells);
+    // console.log(links);
 }
