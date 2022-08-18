@@ -166,12 +166,8 @@ def diagrama(request):
             documento = request.POST["texto"]
             run = ejecucion_sin_solucion(documento, request.user)
 
-            classes = Class.objects.filter(run_fk=run)
-            attributes = Attribute.objects.filter(run_fk=run)
-            relations = Relation.objects.filter(run_fk=run)
-
-            context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
-            return render(request, "main/diagrama.html", context)
+            #return render(request, "main/diagrama.html", context)
+            return run_details(request, run.id)
 
     return render(request, "main/form.html")
 
@@ -198,7 +194,7 @@ def diagrama_gpt3(request):
 
             context = {"requirements": documento, "classes": classes, "attributes": attributes, "relations": relations}
 
-            return render(request, "main/diagrama.html", context)
+            return run_details(request, run.id)
 
     return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user,
                                                    "peticiones": UserExtras.objects.get(user_fk=request.user).peticiones})
@@ -265,8 +261,10 @@ def update_run(request):
     links = json.loads(request.POST['links'])
 
     actual_run = Run.objects.get(id=run_id)
-    # new_run = Run.save(Run(text=actual_run.text))
+    new_run = Run(text=actual_run.text, user_fk=request.user, run_datetime=datetime.datetime.now(), correcion_manual=True)
+    new_run.save()
 
+    actual_run
     run_classes = []
     for cell in cells:
         run_class = Class(name=cell['name'], score=1, run_fk=actual_run)
