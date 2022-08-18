@@ -37,6 +37,7 @@ urlpatterns = [
     path("dashboard", mainViews.dashboard, name="dashboard"),
     path("stats", mainViews.get_general, name="get_general"),
     path("run/<int:run_id>/", mainViews.run_details, name="run_details"),
+    path("update_run", mainViews.update_run, name="update_run"),
     path("delete_run/<int:run_id>/", mainViews.delete_run, name="delete_run"),
     path("diagrama", mainViews.diagrama, name="diagrama"),
     path("diagrama_gpt3", mainViews.diagrama_gpt3, name="diagrama_gpt3"),
