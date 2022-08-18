@@ -152,8 +152,7 @@ def homepage(request):
 def dashboard(request):
     actual_user = request.user
 
-    runs = Run.objects.filter(user_fk__username=actual_user).filter(deleted=False)
-
+    runs = Run.objects.filter(user_fk=actual_user, run_fk=None).filter(deleted=False)
     context = {"runs": runs}
 
     return render(request, "main/dashboard.html", context)
@@ -260,14 +259,42 @@ def update_run(request):
     cells = json.loads(request.POST['cells'])
     links = json.loads(request.POST['links'])
 
-    actual_run = Run.objects.get(id=run_id)
-    new_run = Run(text=actual_run.text, user_fk=request.user, run_datetime=datetime.datetime.now(), correcion_manual=True)
-    new_run.save()
 
-    actual_run
-    run_classes = []
+    actual_run = Run.objects.get(id=run_id)
+    if not actual_run.correcion_manual and actual_run.run_fk is None:
+        new_run = Run(text=actual_run.text, user_fk=request.user, run_datetime=datetime.datetime.now(), correcion_manual=True)
+        new_run.save()
+        actual_run.run_fk = new_run
+        actual_run.save()
+
+    else:
+        first_run = Run.objects.get(run_fk=run_id)
+        new_run = Run(text=actual_run.text, user_fk=request.user, run_datetime=datetime.datetime.now(),
+                      correcion_manual=True)
+        new_run.save()
+        first_run.run_fk = new_run
+        first_run.save()
+
     for cell in cells:
-        run_class = Class(name=cell['name'], score=1, run_fk=actual_run)
+        run_class = Class(name=cell['name'], score=1, run_fk=new_run)
+        run_class.save()
+        for atribute in cell['attributes']:
+            run_attribute = Attribute(name=atribute["name"], type=atribute["type"], run_fk=new_run, class_fk=run_class, score=1)
+            run_attribute.save()
+    for link in links:
+        if "---" not in link["label"]:
+
+            run_relation = Relation(run_fk=new_run, class_fk_1=Class.objects.get(name=link["class_1"], run_fk=new_run)
+                        , class_fk_2=Class.objects.get(name=link["class_2"], run_fk=new_run), phrase=link["label"], multiplicity_1=1, multiplicity_2=1)
+        else:
+            clases = link["label"].split("---")
+
+            run_relation = Relation(run_fk=new_run, class_fk_1=Class.objects.get(name=link["class_1"], run_fk=new_run)
+                                    , class_fk_2=Class.objects.get(name=link["class_2"], run_fk=new_run), phrase=link["label"],
+                                    multiplicity_1=clases[0].split("_")[1], multiplicity_2=clases[0].split("_")[1])
+        run_relation.save()
+
+    delete_run(request, actual_run.id)
 
     return dashboard(request)
 
@@ -281,8 +308,11 @@ def delete_run(request, run_id):
 
         run.save()
 
-        runs = Run.objects.filter(user_fk__username=request.user).filter(deleted=False)
-        context = {"runs": runs}
-        return render(request, "main/dashboard.html", context)
+        run_initial = Run.objects.get(user_fk=request.user,run_fk=run_id)
+        if run_initial is not None:
+            run_initial.run_fk = None
+            run_initial.save()
+
+        return dashboard(request)
     except:
-        return render(request, "main/dashboard.html", context)
+        return dashboard(request)
