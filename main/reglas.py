@@ -69,6 +69,7 @@ def class_detection_rules(doc):
 
     # Regla 5 Como quiero para
     for phrase in phrases:
+
         if "Como" in phrase and ("quiero" in phrase or "deseo" in phrase):
             final = "quiero"
             if "deseo" in phrase:
@@ -78,65 +79,103 @@ def class_detection_rules(doc):
                 if clase.name in phrase[0:phrase.index(final)]:
                     clase.update_percent(20)
 
-    # Reglas de atributos
+    ##### Reglas de atributos #####
+
     classes_final = []
     for clase in classes:
         if clase.percent >= 0:
             classes_final.append(clase)
 
-    # Regla 1 detector atributos y clase tras ":"
+    # Regla 0 detector de listas
     for phrase in phrases:
-        clase_objetivo = None
-        if ":" in phrase:
-            for clase in classes_final:
-                if clase.name in phrase[0:phrase.index(":")]:
-                    clase.update_percent(20)
-                    clase_objetivo = clase
-
-                    if clase_objetivo is not None:
-                        for attribute in attributes:
-                            if attribute.name in phrase[phrase.index(":"):len(phrase)]:
-                                clase_objetivo.add_update_attribute(attribute, 20)
-                                list_classes = [x for x in classes_final if x.name == attribute.name]
-                                if len(list_classes) > 0:
-                                    el = list_classes[0]
-                                    el.update_percent(-50)
-    for clase in classes:
-        if clase.percent >= 0:
-            classes_final.append(clase)
-
-    # Regla 3 - Listado por cercanía
-    # for phrase in phrases:
-
-    # Regla 2 detector preposiciones
-    for phrase in phrases:
+        prep_in_list = False
+        if len(phrase) < 4:
+            break
         list_of_prepositions_in_phrase = []
         for token in nlp(phrase):
             if token.text.lower() in lista_preposiciones:
                 list_of_prepositions_in_phrase.append(token)
-        attributes_return, classes_update, attributes_update = \
-            detector_lista_atributos_frase(nlp(phrase), classes, attributes, attributes_list,
+        attributes_return, classes_update, attributes_update, list_index, list_in_phrase = \
+            detector_lista_atributos_frase(nlp(phrase), classes_final, attributes, attributes_list,
                                            list_of_prepositions_in_phrase)
         classes_final = classes_update
         attributes = attributes_update
 
+        # Regla 1 detector preposiciones
         if len(list_of_prepositions_in_phrase) > 0:
-            classes_return, attributes_return = \
-                clases_atributos_preposiciones(nlp(phrase), list_of_prepositions_in_phrase, classes_final,
-                                               attributes, attributes_list)
+            if not list_in_phrase:
+                classes_return, attributes_update, prep_in_list = \
+                    clases_atributos_preposiciones(nlp(phrase), list_of_prepositions_in_phrase, classes_final,
+                                                   attributes, attributes_list)
+            else:
+                classes_return, prep_in_list = \
+                    clases_atributos_preposiciones_list(nlp(phrase), list_of_prepositions_in_phrase, classes_final,
+                                                        attributes_list, list_index, attributes_return)
             classes_final = classes_return
-            attributes = attributes_return
 
-    # Regla 4 Resto de atributos
-    for phrase in phrases:
-        for attribute in attributes:
-            if attribute.name in phrase and attribute.name in attributes_list:
-                pos_atributo = phrase.index(attribute.name)
+        # Regla 2 detector atributos y clase tras ":"
+
+        clase_objetivo = None
+        if ":" in phrase:
+
+            for clase in classes_final:
+                if clase.name in phrase[0:phrase.index(":")]:
+                    clase.update_percent(20)
+                    clase_objetivo = clase
+                    if clase_objetivo is not None:
+                        if not list_in_phrase:
+                            for attribute in attributes:
+                                if attribute.name in phrase[phrase.index(":"):len(phrase)]:
+                                    clase_objetivo.add_update_attribute(attribute, 20)
+                                    list_classes = [x for x in classes_final if x.name == attribute.name]
+                                    if len(list_classes) > 0:
+                                        el = list_classes[0]
+                                        el.update_percent(-50)
+                        else:
+                            if phrase.index(attributes_return[0].name) > phrase.index(":"):
+                                for attribute in attributes_return:
+                                    clase_objetivo.add_update_attribute(attribute, 20)
+                                    list_classes = [x for x in classes_final if x.name == attribute.name]
+                                    if len(list_classes) > 0:
+                                        el = list_classes[0]
+                                        el.update_percent(-50)
+        classes = []
+        for clase in classes_final:
+            if clase.percent >= 0:
+                classes.append(clase)
+
+        # Regla 3 Resto de atributos
+        if not prep_in_list and ":" not in phrase:
+            if not list_in_phrase:
+                for attribute in attributes:
+                    if attribute.name in phrase and attribute.name in attributes_list:
+                        pos_atributo = phrase.index(attribute.name)
+                        min_pos = 100000
+                        clase_objetivo = None
+
+                        for clase in classes:
+                            if clase.name in [token.lemma_ for token in nlp(phrase)]:
+
+                                cantidad = phrase.count(clase.name)
+                                if cantidad == 1:
+                                    if abs(phrase.index(clase.name) - pos_atributo) < min_pos:
+                                        min_pos = abs(phrase.index(clase.name) - pos_atributo)
+                                        clase_objetivo = clase
+                                else:
+                                    indice = phrase.index(clase.name)
+                                    for i in range(1, cantidad):
+                                        if abs(indice - pos_atributo) < min_pos:
+                                            min_pos = abs(indice - pos_atributo)
+                                            clase_objetivo = clase
+                                        indice = phrase.index(clase.name, indice + 1)
+
+                        if clase_objetivo is not None:
+                            clase_objetivo.add_update_attribute(attribute, 20)
+            else:
                 min_pos = 100000
-                clase_objetivo = None
-                # print(attribute.name, " --- ", pos_atributo)
+                pos_atributo = phrase.index(attributes_return[0].name)
                 for clase in classes:
-                    if clase.name in phrase:
+                    if clase.name in [token.lemma_ for token in nlp(phrase)]:
                         # print(clase.name, " - ",  phrase.index(clase.name))
                         cantidad = phrase.count(clase.name)
                         if cantidad == 1:
@@ -152,7 +191,8 @@ def class_detection_rules(doc):
                                 indice = phrase.index(clase.name, indice + 1)
 
                 if clase_objetivo is not None:
-                    clase_objetivo.add_update_attribute(attribute, 20)
+                    for attribute in attributes_return:
+                        clase_objetivo.add_update_attribute(attribute, 20)
 
     classes_final = []
     for clase in classes:
@@ -167,7 +207,9 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list,
     words = []
     atributos_return = []
     classes_return = []
-
+    to_deleted = []
+    final_index_list = 0
+    list_phrase = True
     if "," not in phrase.text and "y" in phrase.text:
 
         for token in phrase:
@@ -177,6 +219,7 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list,
 
         words.append(phrase[index_y - 1].lemma_)
         words.append(phrase[index_y + 1].lemma_)
+        final_index_list = index_y + 1
 
     elif "," in phrase.text and "y" in phrase.text:
 
@@ -185,43 +228,63 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list,
         for token in phrase:
             if token.text == "y":
                 index_y = token.i
+                final_index_list = token.i + 1
                 break
 
         words.append(phrase[index_y + 1].lemma_)
-        index_y -= 1
+        if phrase[index_y + 1].lemma_ not in attributes:
+            attributes.append(Attribute(phrase[index_y + 1].lemma_))
+        # index_y -= 1
+        last = False
         while index_y > 0:
-            if "," in phrase[index_y - 4: index_y].text:
-                if phrase[index_y - 1].text == ",":
-                    words.append(phrase[index_y].lemma_)
+            if "," in phrase[(index_y - 4 if index_y - 4 > 0 else 0): index_y].text:
+                if phrase[index_y - 2].text == ",":
+                    words.append(phrase[index_y - 1].lemma_)
                     index_y -= 2
+                    last = True
+                    if phrase[index_y - 1].lemma_ not in attributes:
+                        attributes.append(Attribute(phrase[index_y - 1].lemma_))
                 else:
-                    index_comma = index_y - phrase[index_y - 4: index_y].text.index(",")
-                    atributo_compuesto = None
-                    for i in range(index_comma, index_y):
-                        if phrase[i] not in list_of_prepositions:
-                            atributo_compuesto = phrase[i].text + "_"
+                    last = False
+                    actual_part = phrase[(index_y - 4 if index_y - 4 > 0 else 0): index_y]
+                    index_comma = 0 if actual_part.text[0] == "," else len(actual_part.text.split(",")[0].split(" "))
+                    atributo_compuesto = ""
+                    for i in range(index_comma + 1, 4):
+                        if actual_part[i].text not in list(map(lambda x: x.text, list_of_prepositions)):
+                            atributo_compuesto += actual_part[i].text + "_"
+                            if actual_part[i].text in attributes:
+                                to_deleted.append(actual_part[i].text)
+                    atributo_compuesto = atributo_compuesto[:-1]
                     words.append(atributo_compuesto)
                     attributes.append(Attribute(atributo_compuesto))
-                    index_y -= (index_y - index_comma)
+                    index_y -= (5 - index_comma)
             else:
-                words.append(phrase[index_y].lemma_)
+                if last:
+                    words.append(phrase[index_y - 1].lemma_)
+                else:
+                    words.append(phrase[index_y].lemma_)
                 break
 
     if len(words) > 0:
         tam = len(list(set(words).intersection(set(attributes_list))))
-        if tam > 0:
+
+        if len(list(set(words).intersection(set(attributes_list)))) > 0:
             for clase in classes:
-                if clase.name in words:
-                    clase.update_percent(-150 * tam / len(words))
+                for word in words:
+                    if clase.name in word:
+                        clase.update_percent(-150 * tam / len(words))
                 if clase.percent > 0:
                     classes_return.append(clase)
             for attribute in attributes:
-                if attribute.name in words:
+                if attribute.name in words and attribute.name not in to_deleted:
                     atributos_return.append(attribute)
+        else:
+            list_phrase = False
 
-    if len(atributos_return) > 0:
-        print("frase: ", phrase, " atributos: ", [a.name for a in atributos_return])
-    return atributos_return, classes_return, attributes
+
+    if len(classes_return) == 0:
+        classes_return = classes
+    return atributos_return, classes_return, attributes, final_index_list, list_phrase
 
 
 def clases_atributos_preposiciones(phrase, preps, classes, attributes, attributes_list):
@@ -256,7 +319,40 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
         if clase_objetivo is not None and attribute_found:
             # print("phrase: ",phrase, " preposicion: ", prep)
             break
-    return classes, attributes
+    return classes, attributes, attribute_found
+
+
+def clases_atributos_preposiciones_list(phrase, preps, classes, attributes_list, list_index,
+                                        attributes_return):
+    for prep in preps:
+
+        attribute_found = False
+        if list_index < prep.i:
+
+            attribute_found = True
+
+            if prep.i + 5 > len(phrase):
+                after = phrase[prep.i:len(phrase)]
+            else:
+                after = phrase[prep.i: prep.i + 5]
+
+            clase_objetivo = None
+
+            for clase in classes:
+                if clase.name in after.text:
+                    clase_objetivo = clase
+                    clase_objetivo.update_percent(10)
+            # print("clase_objetivo: ",clase_objetivo, "after: ", after)
+            if clase_objetivo is not None:
+                for attribute in attributes_return:
+                    if attribute.name in attributes_list:
+                        clase_objetivo.add_update_attribute(attribute, 50)
+                    else:
+                        clase_objetivo.add_update_attribute(attribute, 20)
+            if clase_objetivo is not None and attribute_found:
+                # print("phrase: ",phrase, " preposicion: ", prep)
+                break
+    return classes, attribute_found
 
 
 def relations_detections(classes, doc):
