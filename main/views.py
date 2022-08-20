@@ -11,7 +11,7 @@ from .forms import NewUserForm
 from django.contrib.auth import login, authenticate, logout  # add this
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm  # add this
-
+from django.http import HttpResponse
 import os
 import openai
 import stripe
@@ -19,6 +19,16 @@ import stripe
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+
+def venue_text(request, run_id):
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename='+str(run_id)+'.sql'
+
+    run = Run.objects.get(user_fk=request.user, id=run_id)
+
+    text = [convertir_run_codigo_sql(run)]
+    response.writelines(text)
+    return response
 
 def logout_request(request):
     logout(request)
@@ -245,9 +255,10 @@ def run_details(request, run_id):
                      for
                      r in Relation.objects.filter(run_fk=run)]
 
-        context = {"run_id": run_id, "requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations}
+        context = {"run_id": run_id, "requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations, "requirements": run.text*5}
         return render(request, "main/run_datails.html", context)
-    except:
+    except BaseException as err:
+        print(err)
         runs = Run.objects.filter(user_fk__username=request.user).filter(deleted=False)
 
         context = {"runs": runs}

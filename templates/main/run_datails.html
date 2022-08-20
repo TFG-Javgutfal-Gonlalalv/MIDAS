@@ -9,6 +9,8 @@
               <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
             </svg> Añadir relación
         </button>
+        <button id="openNewLinksModal" type="button" onclick="openRequirementsModal();" class="btn btn-lg btn-primary my-1">Requisitios </button>
+        <a type="button" href="{% url 'converter' run_id=run_id %}" class="btn btn-lg btn-primary my-1">Descargar Script SQL</a>
         <div id="myDiagramHolder" class="border border-dark rounded"></div>
         <div class="d-grid gap-2">
             <button class="btn btn-lg btn-primary mt-2" onclick="save_graph(graph);">Guardar Diagrama</button>
@@ -17,6 +19,7 @@
 {% endblock content %}
 
 {% block modals %}
+    {% include "modals/requirements_modal.html" %}
     {% include "modals/class_name_modal.html" %}
     {% include "modals/new_link_modal.html" %}
     {% include "modals/links_modal.html" %}
@@ -28,6 +31,11 @@
 
         function randomIntFromInterval(min, max) { // min and max included
           return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        function openRequirementsModal(){
+            var myModal = new bootstrap.Modal(document.getElementById('requirementsNameModal'));
+            myModal.show();
         }
 
         function openCreateLink(){
