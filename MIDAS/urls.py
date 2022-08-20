@@ -43,6 +43,7 @@ urlpatterns = [
     path("diagrama_gpt3", mainViews.diagrama_gpt3, name="diagrama_gpt3"),
     path("payment", mainViews.payment, name="payment"),
     path("converter/<int:run_id>/", mainViews.venue_text, name="converter"),
+    path("result/<int:run_id>/", mainViews.results, name="result"),
     path("register", mainViews.register_request, name="register"),
     path("login", mainViews.login_request, name="login"),
     path("logout", mainViews.logout_request, name="logout"),

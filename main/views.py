@@ -1,6 +1,6 @@
 import datetime
 import json
-
+import difflib
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
@@ -20,15 +20,7 @@ stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def venue_text(request, run_id):
-    response = HttpResponse(content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename='+str(run_id)+'.sql'
 
-    run = Run.objects.get(user_fk=request.user, id=run_id)
-
-    text = [convertir_run_codigo_sql(run)]
-    response.writelines(text)
-    return response
 
 def logout_request(request):
     logout(request)
@@ -255,7 +247,7 @@ def run_details(request, run_id):
                      for
                      r in Relation.objects.filter(run_fk=run)]
 
-        context = {"run_id": run_id, "requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations, "requirements": run.text*5}
+        context = {"run_id": run_id, "requirements": run.text, "classes": classes, "attributes": attributes, "relations": relations, "requirements": run.text}
         return render(request, "main/run_datails.html", context)
     except BaseException as err:
         print(err)
@@ -327,3 +319,31 @@ def delete_run(request, run_id):
         return dashboard(request)
     except:
         return dashboard(request)
+
+@login_required(login_url='/login')
+def venue_text(request, run_id):
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename='+str(run_id)+'.sql'
+
+    run = Run.objects.get(user_fk=request.user, id=run_id)
+
+    text = [convertir_run_codigo_sql(run)]
+    response.writelines(text)
+    return response
+
+@login_required(login_url='/login')
+def results(request, run_id):
+
+    run_modificada = Run.objects.get(user_fk=request.user, id=run_id)
+    run_inicial = Run.objects.get(user_fk=request.user, run_fk=run_id)
+
+
+    classes_rate = difflib.SequenceMatcher(None, sorted([c.name.lower()  for c in run_inicial.class_set.all()]), sorted([c.name.lower()  for c in run_modificada.class_set.all()]))
+    attribute_rate = difflib.SequenceMatcher(None, sorted([a.name.lower() for a in run_inicial.attribute_set.all()]), sorted([a.name.lower()  for a in run_modificada.attribute_set.all()]))
+    relation_rate =  difflib.SequenceMatcher(None, sorted([a.class_fk_1.name.lower()+"-"+a.class_fk_2.name.lower() for a in run_inicial.relation_set.all()]), sorted([a.class_fk_1.name.lower()+"-"+a.class_fk_2.name.lower() for a in run_modificada.relation_set.all()]))
+    print(classes_rate.ratio(), attribute_rate.ratio(), relation_rate.ratio())
+    response = HttpResponse(content_type='text/plain')
+
+    text = [classes_rate.ratio()," ",attribute_rate.ratio(), " ",relation_rate.ratio()]
+    response.writelines(text)
+    return response
