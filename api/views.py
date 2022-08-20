@@ -14,7 +14,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
 from main.converter import convertir_run_codigo_sql
 from main.models import Run, UserExtras
-from main.views import gpt3
+from main.views import gpt3, results
 from main.nlpcd import ejecucion_sin_solucion
 from main.utils import runToJson
 
@@ -73,6 +73,26 @@ class TextPlainAutoSchema(SwaggerAutoSchema):
         return ["text/plain"]
 
 
+class TextPlainAutoSchemaProduces(SwaggerAutoSchema):
+    def get_produces(self):
+        return ["text/plain"]
+
+
+#@swagger_auto_schema(method='GET', auto_schema=TextPlainAutoSchemaProduces)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@renderer_classes([JSONRenderer, HTMLFormRenderer])
+def result(request, run_id):
+    try:
+        resultados = results(request, run_id).getvalue().decode().split(" ")
+        jsonToPython = json.loads('{"class_rate": '+resultados[0]+ ', "attribute_rate": '+resultados[1]+ ', '
+                                                                                                         '"relation_rate": '+resultados[2]+"}")
+        return HttpResponse(json.dumps(jsonToPython), content_type="application/json")
+    except BaseException as err:
+        print(err)
+        return Response("Id no válido")
+
+
 @swagger_auto_schema(method='POST', auto_schema=TextPlainAutoSchema,
                      request_body=openapi.Schema('requisitos', "Indique aquí los requisitos", type=openapi.TYPE_STRING)
     ,
@@ -84,15 +104,16 @@ def nlp(request):
     if request.method == "POST":
         try:
             if request.body:
-                #print(request.body.decode('utf-8', 'ignore'))
+                # print(request.body.decode('utf-8', 'ignore'))
                 documento = request.body.decode('utf-8', 'ignore')
                 run = ejecucion_sin_solucion(documento, request.user)
 
-                return runToJson(request,run.id)
+                return runToJson(request, run.id)
 
         except BaseException as err:
             print(err)
             return Response("No se ha podido ejecutar correctamente el algoritmo nlp")
+
 
 @swagger_auto_schema(method='POST', auto_schema=TextPlainAutoSchema,
                      request_body=openapi.Schema('requisitos', "Indique aquí los requisitos", type=openapi.TYPE_STRING)
@@ -116,11 +137,12 @@ def ejecutar_gpt3(request):
                 userExtras.peticiones -= 1
                 userExtras.save()
 
-                return runToJson(request,run.id)
+                return runToJson(request, run.id)
 
         except BaseException as err:
             print(err)
             return Response("No se ha podido ejecutar correctamente el algoritmo gpt3")
+
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
     type=openapi.TYPE_OBJECT,

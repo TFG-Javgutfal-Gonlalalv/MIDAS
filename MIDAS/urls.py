@@ -53,6 +53,7 @@ urlpatterns = [
     path("api/run/sql/<int:run_id>/", apiViews.getRunInSQL),
     path("api/run/<int:run_id>/", apiViews.getRun),
     path("api/run/delete/<int:run_id>/", apiViews.deleteRun),
+    path("api/result/<int:run_id>/", apiViews.result),
     path("api/nlp", apiViews.nlp),
     path("api/gpt3", apiViews.ejecutar_gpt3),
     path("api/", schema_view.with_ui('swagger', cache_timeout=0), name="swagger-schema")
