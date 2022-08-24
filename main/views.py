@@ -341,7 +341,7 @@ def results(request, run_id):
     classes_rate = difflib.SequenceMatcher(None, sorted([c.name.lower()  for c in run_inicial.class_set.all()]), sorted([c.name.lower()  for c in run_modificada.class_set.all()]))
     attribute_rate = difflib.SequenceMatcher(None, sorted([a.name.lower() for a in run_inicial.attribute_set.all()]), sorted([a.name.lower()  for a in run_modificada.attribute_set.all()]))
     relation_rate =  difflib.SequenceMatcher(None, sorted([a.class_fk_1.name.lower()+"-"+a.class_fk_2.name.lower() for a in run_inicial.relation_set.all()]), sorted([a.class_fk_1.name.lower()+"-"+a.class_fk_2.name.lower() for a in run_modificada.relation_set.all()]))
-    print(classes_rate.ratio(), attribute_rate.ratio(), relation_rate.ratio())
+
     response = HttpResponse(content_type='text/plain')
 
     text = [classes_rate.ratio()," ",attribute_rate.ratio(), " ",relation_rate.ratio()]

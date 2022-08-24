@@ -176,7 +176,7 @@ def class_detection_rules(doc):
                 pos_atributo = phrase.index(attributes_return[0].name)
                 for clase in classes:
                     if clase.name in [token.lemma_ for token in nlp(phrase)]:
-                        # print(clase.name, " - ",  phrase.index(clase.name))
+
                         cantidad = phrase.count(clase.name)
                         if cantidad == 1:
                             if abs(phrase.index(clase.name) - pos_atributo) < min_pos:
@@ -306,10 +306,9 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
             if clase.name in after.text:
                 clase_objetivo = clase
                 clase_objetivo.update_percent(10)
-        # print("clase_objetivo: ",clase_objetivo, "after: ", after)
+
         if clase_objetivo is not None:
             for attribute in attributes:
-
                 if attribute.name in before.text and attribute.name not in list(map(lambda x: x.name, classes)):
                     attribute_found = True
                     if attribute.name in attributes_list:
@@ -317,7 +316,6 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
                     else:
                         clase_objetivo.add_update_attribute(attribute, 10)
         if clase_objetivo is not None and attribute_found:
-            # print("phrase: ",phrase, " preposicion: ", prep)
             break
     return classes, attributes, attribute_found
 
@@ -342,7 +340,7 @@ def clases_atributos_preposiciones_list(phrase, preps, classes, attributes_list,
                 if clase.name in after.text:
                     clase_objetivo = clase
                     clase_objetivo.update_percent(10)
-            # print("clase_objetivo: ",clase_objetivo, "after: ", after)
+
             if clase_objetivo is not None:
                 for attribute in attributes_return:
                     if attribute.name in attributes_list:
@@ -350,7 +348,6 @@ def clases_atributos_preposiciones_list(phrase, preps, classes, attributes_list,
                     else:
                         clase_objetivo.add_update_attribute(attribute, 20)
             if clase_objetivo is not None and attribute_found:
-                # print("phrase: ",phrase, " preposicion: ", prep)
                 break
     return classes, attribute_found
 
@@ -370,7 +367,7 @@ def relations_detections(classes, doc):
         phrase_nlp = nlp(phrase)
 
         for token in phrase_nlp:
-            # print(token.pos_, token.dep_, token.lemma_)
+
             if token.pos_ == "NOUN" and token.dep_ == "nsubj" and first_class == None and token.lemma_ in classes:
                 first_class = classes[classes.index(token.lemma_)]
             if (token.pos_ == "VERB" and (
@@ -390,7 +387,7 @@ def relations_detections(classes, doc):
             # Regla 2 AND
             if second_class_id + 1 < len(phrase_nlp) and phrase_nlp[second_class_id + 1].text == "y":
                 t = phrase_nlp[second_class_id + 2]
-                # print("frase: ",phrase, "  t: ", t, " pos: ", t.pos_, " dep: ", t.dep_)
+
                 if (t.pos_ == "NOUN" and (
                         t.dep_ == "obj" or t.dep_ == "nsubj" or t.dep_ == "conj") and t.lemma_ in classes
                         and second_class.name != t.lemma_ and first_class.name != t.lemma_):
@@ -409,5 +406,4 @@ def relations_detections(classes, doc):
                     relations.append(Relation(first_class, second_class, verb, phrase, "None"))
                     relations.append(Relation(first_class, third_class, verb, phrase, "None"))
 
-    # print(relations)
     return relations

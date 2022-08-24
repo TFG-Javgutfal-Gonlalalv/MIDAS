@@ -104,7 +104,6 @@ def nlp(request):
     if request.method == "POST":
         try:
             if request.body:
-                # print(request.body.decode('utf-8', 'ignore'))
                 documento = request.body.decode('utf-8', 'ignore')
                 run = ejecucion_sin_solucion(documento, request.user)
 
