@@ -63,8 +63,9 @@ def class_detection_rules(doc):
             classes.append(clase)
             classes = list(set(classes))
 
-        attributes.append(Attribute(word))
-        attributes = list(set(attributes))
+        if word.lower() not in technicalities and word.lower() != "el":
+            attributes.append(Attribute(word))
+            attributes = list(set(attributes))
     phrases = doc.text.split(".")
 
     # Regla 5 Como quiero para
@@ -89,6 +90,8 @@ def class_detection_rules(doc):
     # Regla 0 detector de listas
     for phrase in phrases:
         prep_in_list = False
+        list_in_phrase = False
+
         if len(phrase) < 4:
             break
         list_of_prepositions_in_phrase = []
@@ -257,12 +260,12 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list,
                     atributo_compuesto = atributo_compuesto[:-1]
                     words.append(atributo_compuesto)
                     attributes.append(Attribute(atributo_compuesto))
-                    index_y -= (5 - index_comma)
+                    index_y -= (4 - index_comma)
             else:
                 if last:
                     words.append(phrase[index_y - 1].lemma_)
                 else:
-                    words.append(phrase[index_y].lemma_)
+                    words.append(phrase[index_y - 1].lemma_)
                 break
 
     if len(words) > 0:
@@ -271,7 +274,7 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list,
         if len(list(set(words).intersection(set(attributes_list)))) > 0:
             for clase in classes:
                 for word in words:
-                    if clase.name in word:
+                    if clase.name in word or clase.name in to_deleted:
                         clase.update_percent(-150 * tam / len(words))
                 if clase.percent > 0:
                     classes_return.append(clase)
@@ -280,6 +283,8 @@ def detector_lista_atributos_frase(phrase, classes, attributes, attributes_list,
                     atributos_return.append(attribute)
         else:
             list_phrase = False
+    else:
+        list_phrase = False
 
 
     if len(classes_return) == 0:
@@ -309,7 +314,7 @@ def clases_atributos_preposiciones(phrase, preps, classes, attributes, attribute
 
         if clase_objetivo is not None:
             for attribute in attributes:
-                if attribute.name in before.text and attribute.name not in list(map(lambda x: x.name, classes)):
+                if attribute.name in before.text and attribute.name not in list(map(lambda x: x.name, classes)) and attribute.name != '"' and attribute.name != "":
                     attribute_found = True
                     if attribute.name in attributes_list:
                         clase_objetivo.add_update_attribute(attribute, 50)

@@ -47,6 +47,7 @@ urlpatterns = [
     path("register", mainViews.register_request, name="register"),
     path("login", mainViews.login_request, name="login"),
     path("logout", mainViews.logout_request, name="logout"),
+    path("docs", mainViews.docs, name="docs"),
 
     path("api/login", apiViews.login),
     path("api/runs", apiViews.getRuns, name='runs'),

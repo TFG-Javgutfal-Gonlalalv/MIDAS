@@ -19,7 +19,8 @@ import stripe
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-
+def docs(request):
+    return render(request=request, template_name="main/docs.html")
 
 
 def logout_request(request):
@@ -80,7 +81,8 @@ Relaciones: \n\
 Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
 Clase1-Clase2:  multiplicidad_Clase1, multiplicidad_Clase2...\n\
 Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
-...\n'
+...\n\n \
+Clases:\n'\
 
     texto = requisitos + pregunta
     # print(texto)
@@ -88,7 +90,7 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
         engine="text-davinci-002",
         prompt=texto,
         temperature=0.7,
-        max_tokens=1000,
+        max_tokens=3000,
         top_p=0.1,
         frequency_penalty=0,
         presence_penalty=0
@@ -110,7 +112,8 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
         Estudiante-Libro: *, 1\n\
         Profesor-Revista: *, 1"
 
-    lista_response = response.choices[0].text.split("\n")
+    lista_response =["Clases:"]
+    lista_response.extend(response.choices[0].text.split("\n"))
     en_clases = False
     en_relaciones = False
     try:
@@ -128,7 +131,7 @@ Clase1-Clase2: multiplicidad_Clase1, multiplicidad_Clase2...\n\
                 atributos = clase_atributos[1].split(",")
                 for atributo in atributos:
                     attribute_bd = Attribute(name=str.strip(atributo), score=0, run_fk=run, class_fk=clase_bd,
-                                             type="varchar(50)")
+                                             type="String")
                     attribute_bd.save()
             elif en_relaciones and lista_response[i] != "" and lista_response[i] != "\n":
                 # print(lista_response[i])

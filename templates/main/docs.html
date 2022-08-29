@@ -1,0 +1,96 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <!-- content -->
+
+    <div class="container text-center">
+        <h1 class="text-center my-3">Manual de Usuario</h1>
+
+
+        <p>Desde el Navbar superior podremos acceder a las diferentes partes de la aplicación.</p>
+        <img src="https://i.im.ge/2022/08/29/OtDOqJ.navbar.png" alt="navbar">
+
+        <br>
+        <br>
+        <h2>Inicio</h2>
+        <p>En esta vista encontraremos el listado de ejecuciones generadas tanto por NLP como GPT-3.</p>
+        <img src="https://i.im.ge/2022/08/29/Ot7GkW.listado.png" alt="listado" width="75%" style="border:3px solid #18191b; border-radius: 12px">
+        <br>
+        <br>
+        <p>Al pulsar el el botón rojo, podremos eliminar la ejecución, al pulsar el verde, se
+            abrirá con un modal con los resultados de comparar, la ejecución modificada sobre la
+            que estamos pulsando, con la ejecución inicial obtenida por NLP o GPT-3. </p>
+        <img src="https://i.im.ge/2022/08/29/OtI1GP.resultados.png" alt="resultados" width="30%" style="border:3px solid #18191b; border-radius: 12px">
+        <br>
+        <br>
+        <p>Por último, también podremos hacer la acción de modificar una ejecución pulsando sobre el botón azul de aquella que queramos modificar. </p>
+        <h2>NLP</h2>
+        <p>Desde el navbar podremos acceder a esta vista donde podremos rellenar el formulario con los requisitos de la aplicación que queramos generar mediante el algoritmo NLP.</p>
+        <img src="https://i.im.ge/2022/08/29/OtD1ty.nlp.png" alt="nlp" style="border:3px solid #18191b; border-radius: 12px" width="75%">
+        <br>
+        <br>
+        <h2>GPT-3</h2>
+        <p>Desde el navbar podremos acceder a esta vista donde podremos rellenar el formulario con los requisitos de la aplicación que queramos generar mediante el algoritmo GPT-3.</p>
+        <img src="https://i.im.ge/2022/08/29/OtD2zS.gpt-3.png" alt="gpt-3" style="border:3px solid #18191b; border-radius: 12px" width="75%">
+        <br>
+        <br>
+        <p>Al pulsar en el botón de pagar con tarjeta se nos abrirá un modal para introducir los datos de la tarjeta con la que se va a realizar el pago. Una vez completado el proceso de pago, adquiriremos 10 nuevas peticiones para usar.</p>
+        <img src="https://i.im.ge/2022/08/29/OtIlZ4.modal-de-pago.png" alt="modal de pago" style="border:3px solid #18191b; border-radius: 12px" width="30%">
+        <br>
+        <br>
+        <p>Para probar la funcionalidad tanto con NLP como con GPT-3, ponemos a continuación unos requisitos para su uso:</p>
+        <p>Las bibliotecas son utilizadas por los estudiantes y profesores de Informática.
+            Las bibliotecas serán identificadas por un nombre, localización y tamaño.
+            Las bibliotecas contienen libros y revistas.
+            Los libros se pueden entregar tanto a los estudiantes como a los profesores.
+            Las revistas solo se pueden enviar a los profesores.
+            Los libros y revistas solo pueden ser publicados por el bibliotecario.
+            Se debe guardar el nombre y dni del bibliotecario.
+            El bibliotecario se encarga de recibir los libros y revistas devueltos.
+            Los estudiantes tienen nombre, apellido y nif.
+            Los libros tendrán: título, fecha de publicación y autor.
+            Las revistas: marca y semana.
+            Se deberá almacenar el nombre, apellidos, cargo y especialidad de cada profesor.</p>
+        <br>
+        <br>
+        <h2>Modificar ejecuciones</h2>
+        <p>Desde el listado de ejecuaciones, pulsando sobre el botón azul de alguna de las ya generadas podremos ver el
+            modelado de clases fruto de dicho ejecución. Las 'cajas' (clases), de este modelado se
+            pueden mover a gusto del usuario, para poder visualizar de la mejor forma posible el diagrama.</p>
+        <img src="https://i.im.ge/2022/08/29/OtIo1Y.edicion.png" alt="edicion" style="border:3px solid #18191b; border-radius: 12px" width="75%">
+        <br>
+        <br>
+        <p>Los nombres de estas clases, son editables, al igual que los nombres y tipos de sus atributos.
+            Para poder acceder al modal de modificación de todo ello, debemos hacer doble click en
+            aquella clase que queramos modificar. De esta forma se nos abrirá el modal de edicción de la clase,
+            donde también podremos eliminar atributos pulsando el botón rojo de cada atributo, o añadir
+            nuevos atributos a la lista de los ya existentes.</p>
+        <img src="https://i.im.ge/2022/08/29/OtIXwD.modal-clases.png" alt="modal clases" style="border:3px solid #18191b; border-radius: 12px" width="30%">
+        <br>
+        <br>
+        <p>También es posible, que una de las entidades del sistema a crear no haya sido detectada por el algoritmo,
+            es por ello que se pueden crear nuevas clases haciendo doble click en cualquier espacio libre del modelado.</p>
+        <br>
+        <br>
+        <h2>Modificar relaciones</h2>
+        <br>
+        <br>
+        <p>Podemos abrir un modal para modificar las relaciones del diagrama, pulsando sobre aquella relación que queramos
+            editar. Pudiendo indicar en este caso la multiplicidad de la relación.</p>
+        <img src="https://i.im.ge/2022/08/29/OtIMAh.editar-relacion.png" alt="editar relacion" style="border:3px solid #18191b; border-radius: 12px" width="40%">
+        <br>
+        <br>
+        <p>Además, si una relación necesaria no se encuentra en el modelado, podremos pulsar el botón '+ Añadir relación",
+            y se nos abrirá el modal para crear una nueva,
+            eligiendo en primer lugar, con unos selectores, las clases de la relación de entre las existentes
+            en el diagrama, y posteriormente la multiplicidad de la relación. Al pulsar en guardar se cerrará el modal
+            y podremos ver la relación ya creada.</p>
+        <img src="https://i.im.ge/2022/08/29/OtIuXC.modal-relaciones.png" alt="editar relacion" style="border:3px solid #18191b; border-radius: 12px" width="40%">
+        <br>
+        <br>
+        <p>Finalmente podremos ver los requisitos que introdujimos para generar el diagrama desde el botón Requisitos
+        que nos abrirá un modal con los mismos.</p>
+        <img src="https://i.im.ge/2022/08/29/OtIFiq.modal-requisitos.png" alt="modal requisitos" style="border:3px solid #18191b; border-radius: 12px" width="40%"></a>
+    </div>
+{% endblock content %}
+

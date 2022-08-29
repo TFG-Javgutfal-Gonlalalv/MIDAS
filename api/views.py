@@ -18,7 +18,8 @@ from main.views import gpt3, results
 from main.nlpcd import ejecucion_sin_solucion
 from main.utils import runToJson
 
-
+@swagger_auto_schema(method="GET",operation_description="Llamada sin parámetros para obtener el listado de ids de "
+                                                          "ejecuciones que hemos generado.")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getRuns(request):
@@ -27,6 +28,8 @@ def getRuns(request):
     return HttpResponse(json.dumps(data, indent=4, sort_keys=True), content_type="application/json")
 
 
+@swagger_auto_schema(method="GET",operation_description="Llamada con el id de una ejecución como parámetro, se obtiene un script"
+                                                          "SQL de la base de datos que se genera fruto del modelado.")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getRunInSQL(request, run_id):
@@ -38,6 +41,8 @@ def getRunInSQL(request, run_id):
         return Response("No existe esa run o no pertenece al usuario logeado")
 
 
+@swagger_auto_schema(method="GET",operation_description="Llamada con el id de una ejecución como parámetro, se obtiene los datos"
+                                           "en formato json del diagrama de la ejecución.")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getRun(request, run_id):
@@ -49,7 +54,8 @@ def getRun(request, run_id):
             print(err)
             return Response("No existe esa run o no pertenece al usuario logeado")
 
-
+@swagger_auto_schema(method="DELETE",operation_description="Llamada con el id de una ejecución como parámetro, "
+                                           "se elimina la run indicada como parámetro.")
 @api_view(['DELETE'])
 @permission_classes(IsAuthenticated)
 def deleteRun(request, run_id):
@@ -77,8 +83,8 @@ class TextPlainAutoSchemaProduces(SwaggerAutoSchema):
     def get_produces(self):
         return ["text/plain"]
 
-
-#@swagger_auto_schema(method='GET', auto_schema=TextPlainAutoSchemaProduces)
+@swagger_auto_schema(method="GET",operation_description="Llamada con el id de una ejecución como parámetro,"
+                                            " se obtiene la comparativa entre el diagrama generado y el modificado.")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer, HTMLFormRenderer])
@@ -93,7 +99,10 @@ def result(request, run_id):
         return Response("Id no válido")
 
 
-@swagger_auto_schema(method='POST', auto_schema=TextPlainAutoSchema,
+@swagger_auto_schema(method='POST',operation_description="Llamada con un body donde introducir los requisitos "
+                    "a través de los cuales se quiere generar el modelado. Al pulsar en ejecutar se obtendrá un json"
+                    "con las clases, atributos y relaciones de las que se compone el modelado generado con NLP."
+                    "Finalmente se incluye la url para acceder a la visualización y modificación del diagrama. ", auto_schema=TextPlainAutoSchema,
                      request_body=openapi.Schema('requisitos', "Indique aquí los requisitos", type=openapi.TYPE_STRING)
     ,
                      )
@@ -114,7 +123,10 @@ def nlp(request):
             return Response("No se ha podido ejecutar correctamente el algoritmo nlp")
 
 
-@swagger_auto_schema(method='POST', auto_schema=TextPlainAutoSchema,
+@swagger_auto_schema(method='POST', operation_description="Llamada con un body donde introducir los requisitos "
+                    "a través de los cuales se quiere generar el modelado. Al pulsar en ejecutar se obtendrá un json"
+                    "con las clases, atributos y relaciones de las que se compone el modelado generado con GPT-3."
+                    "Finalmente se incluye la url para acceder a la visualización y modificación del diagrama.", auto_schema=TextPlainAutoSchema,
                      request_body=openapi.Schema('requisitos', "Indique aquí los requisitos", type=openapi.TYPE_STRING)
     ,
                      )
@@ -143,7 +155,8 @@ def ejecutar_gpt3(request):
             return Response("No se ha podido ejecutar correctamente el algoritmo gpt3")
 
 
-@swagger_auto_schema(method='post', request_body=openapi.Schema(
+@swagger_auto_schema(method='post',operation_description="Llamada con un body donde introducir el username y password"
+                                                         "para obtener el Token necesario para utilizar la API.", request_body=openapi.Schema(
     type=openapi.TYPE_OBJECT,
     properties={
         'username': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
