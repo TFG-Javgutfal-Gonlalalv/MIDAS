@@ -3,6 +3,7 @@ import json
 import difflib
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.template import RequestContext
 from main.nlpcd import ejecucion, ejecucion_sin_solucion
 from main.models import Class, Attribute, Relation, Run, FrequentAttributes, UserExtras
 from main.converter import convertir_run_codigo_sql
@@ -11,6 +12,7 @@ from .forms import NewUserForm
 from django.contrib.auth import login, authenticate, logout  # add this
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm  # add this
+
 from django.http import HttpResponse
 import os
 import openai
@@ -69,7 +71,7 @@ def login_request(request):
     return render(request=request, template_name="main/login.html", context={"login_form": form})
 
 
-def gpt3(requisitos, run):
+def gpt3(requisitos, run, intento,request):
     pregunta = '\n\nDevuelve clases, atributos y relaciones de los requisitos anteriores cumpliendo sin excepción el siguiente formato:\n\n\
 Clases:\n\
 Clase1: atributo1, atributo2...\n\
@@ -138,14 +140,32 @@ Clases:\n'\
                 relacion_multiplicidad = lista_response[i].split(":")
                 relacion = relacion_multiplicidad[0].split("-")
                 multiplicidad = relacion_multiplicidad[1].split(", ")
-                relation_bd = Relation(class_fk_1=Class.objects.get(name=str.strip(relacion[0]), run_fk=run),
-                                       multiplicity_1=str.strip(multiplicidad[0]),
-                                       class_fk_2=Class.objects.get(name=str.strip(relacion[1]), run_fk=run),
-                                       multiplicity_2=str.strip(multiplicidad[1]), run_fk=run)
+                class_fk1 = Class.objects.get(name=str.strip(relacion[0]), run_fk=run)
+                class_fk2 = Class.objects.get(name=str.strip(relacion[1]), run_fk=run)
+                multiplicidad_1 = str.strip(multiplicidad[0])
+                multiplicidad_2 = str.strip(multiplicidad[1])
+                relation_bd = Relation(class_fk_1= class_fk1,
+                                       multiplicity_1=multiplicidad_1,
+                                       class_fk_2= class_fk2,
+                                       multiplicity_2=multiplicidad_2, run_fk=run,
+
+                                       phrase= ""+Class.objects.get(name=str.strip(relacion[0]), run_fk=run).name
+                                               + '_' + str.strip(multiplicidad[0]) + '---' \
+                              + Class.objects.get(name=str.strip(relacion[1]), run_fk=run).name + '_' + str.strip(multiplicidad[1]))
 
                 relation_bd.save()
     except:
-        # gpt3(requisitos, run)
+
+        if intento > 3:
+            userExtras = UserExtras.objects.get(user_fk=request.user)
+            userExtras.peticiones += 1
+            userExtras.save()
+
+            run = ejecucion_sin_solucion(requisitos, request.user)
+
+            return run_details(request, run.id)
+        else:
+            gpt3(requisitos, run,intento+1)
         print("error")
 
 
@@ -170,7 +190,6 @@ def diagrama(request):
             documento = request.POST["texto"]
             run = ejecucion_sin_solucion(documento, request.user)
 
-            #return render(request, "main/diagrama.html", context)
             return run_details(request, run.id)
 
     return render(request, "main/form.html")
@@ -184,9 +203,9 @@ def diagrama_gpt3(request):
                 return render(request, "main/form_gpt3.html", {"key": os.getenv("STRIPE_PUBLISHABLE_KEY"), "user": request.user,
                                                    "peticiones": UserExtras.objects.get(user_fk=request.user).peticiones})
             documento = request.POST["texto"]
-            run = Run(text=documento, run_datetime=datetime.datetime.now(), user_fk=request.user)
+            run = Run(text=documento, run_datetime=datetime.datetime.now(), type="GPT-3", user_fk=request.user)
             run.save()
-            gpt3(documento, run)
+            gpt3(documento, run, 0, request)
 
             userExtras = UserExtras.objects.get(user_fk=request.user)
             userExtras.peticiones -= 1
@@ -243,6 +262,12 @@ def run_details(request, run_id):
     try:
         run = Run.objects.filter(user_fk=request.user).get(id=run_id)
 
+        if run.run_fk is not None:
+            runs = Run.objects.filter(user_fk=request.user, run_fk=None).filter(deleted=False)
+
+            context = {"runs": runs}
+            return render(request, "main/dashboard.html", context)
+
         classes = [{"name": c.name, "score": c.score} for c in Class.objects.filter(run_fk=run)]
         attributes = [{"name": a.name, "score": a.score, "type": a.type, "class": a.class_fk.name} for a in
                       Attribute.objects.filter(run_fk=run)]
@@ -254,7 +279,7 @@ def run_details(request, run_id):
         return render(request, "main/run_datails.html", context)
     except BaseException as err:
         print(err)
-        runs = Run.objects.filter(user_fk__username=request.user).filter(deleted=False)
+        runs = Run.objects.filter(user_fk=request.user, run_fk=None).filter(deleted=False)
 
         context = {"runs": runs}
         return render(request, "main/dashboard.html", context)

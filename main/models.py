@@ -12,7 +12,7 @@ class Run(models.Model):
     run_datetime = models.DateTimeField(null=False, auto_now_add=True)
     log_run = models.TextField(default="")
     user_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    type = models.CharField(default="nlp", max_length=5)
+    type = models.CharField(default="NLP", max_length=5)
     run_fk = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name="run_modificada")
     correcion_manual = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)

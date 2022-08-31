@@ -23,8 +23,7 @@ from main.utils import runToJson
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getRuns(request):
-    data = list(Run.objects.filter(user_fk=request.user).values_list("id", flat=True))
-
+    data = list(Run.objects.filter(user_fk=request.user, run_fk=None).filter(deleted=False).values_list("id", flat=True))
     return HttpResponse(json.dumps(data, indent=4, sort_keys=True), content_type="application/json")
 
 
@@ -57,13 +56,17 @@ def getRun(request, run_id):
 @swagger_auto_schema(method="DELETE",operation_description="Llamada con el id de una ejecución como parámetro, "
                                            "se elimina la run indicada como parámetro.")
 @api_view(['DELETE'])
-@permission_classes(IsAuthenticated)
+@permission_classes([IsAuthenticated])
 def deleteRun(request, run_id):
     if request.method == "DELETE":
         try:
             run = Run.objects.filter(user_fk=request.user).get(id=run_id)
-            if run.deleted == True:
+            if run.deleted:
                 return Response("Run " + str(run_id) + " ya ha sido eliminada previamente")
+
+            if run.run_fk is not None:
+                return Response("No está permitido eliminar la run " + str(run_id) + " elimine antes la modificada.")
+
             run.deleted = True
             run.save()
 
