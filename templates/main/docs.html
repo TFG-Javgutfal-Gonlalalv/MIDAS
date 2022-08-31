@@ -7,30 +7,31 @@
         <h1 class="text-center my-3">Manual de Usuario</h1>
 
 
-        <p>Desde el Navbar superior podremos acceder a las diferentes partes de la aplicación.</p>
+        <p>Encontraremos en la parte superior de la pantalla una barra de navegación, desde donde podremos acceder a todas funcionalidades y vista del sistema.</p>
         <img src="https://i.im.ge/2022/08/29/OtDOqJ.navbar.png" alt="navbar">
 
         <br>
         <br>
         <h2>Inicio</h2>
-        <p>En esta vista encontraremos el listado de ejecuciones generadas tanto por NLP como GPT-3.</p>
+        <p>Una vez con la sesión iniciada, podremos acceder a la vista inicial con nuestro listado de ejecuciones, aparecerán tanto las realizadas con <b>NLP</b> como las de <b>GPT-3</b>. Para cada cual podremos realizar entre 2 y 3 acciones diferentes.</p>
         <img src="https://i.im.ge/2022/08/29/Ot7GkW.listado.png" alt="listado" width="75%" style="border:3px solid #18191b; border-radius: 12px">
         <br>
         <br>
-        <p>Al pulsar el el botón rojo, podremos eliminar la ejecución, al pulsar el verde, se
-            abrirá con un modal con los resultados de comparar, la ejecución modificada sobre la
-            que estamos pulsando, con la ejecución inicial obtenida por NLP o GPT-3. </p>
+        <p>Al pulsar el el botón rojo, podremos eliminar la ejecución, al pulsar el verde, se abrirá un modal que podemos ver en la siguiente imagen, con los resultados de comparar la ejecución corregida manualmente sobre la que estamos pulsando con la ejecución que se ha realizado de forma automática dentro de la aplicación usando nuestros algoritmos de <b>NLP</b> o <b>GPT-3</b>.</p>
         <img src="https://i.im.ge/2022/08/29/OtI1GP.resultados.png" alt="resultados" width="30%" style="border:3px solid #18191b; border-radius: 12px">
         <br>
         <br>
-        <p>Por último, también podremos hacer la acción de modificar una ejecución pulsando sobre el botón azul de aquella que queramos modificar. </p>
+        <p>Por último, también podremos hacer la acción de modificar una ejecución pulsando sobre el botón azul de aquella que queramos modificar. Esta acción nos llevará a otra vista con la que trabajaremos más adelante.</p>
         <h2>NLP</h2>
-        <p>Desde el navbar podremos acceder a esta vista donde podremos rellenar el formulario con los requisitos de la aplicación que queramos generar mediante el algoritmo NLP.</p>
+        <p>Este es un formulario simple, en el cual tenemos un único campo en el que podremos escribir los requisitos del sistema a crear. Una vez introducidos podremos pulsar en el botón <b>Analizar requisitos</b>, y se nos redirigirá a la vista con el modelo creado.</p>
         <img src="https://i.im.ge/2022/08/29/OtD1ty.nlp.png" alt="nlp" style="border:3px solid #18191b; border-radius: 12px" width="75%">
         <br>
-        <br>
         <h2>GPT-3</h2>
-        <p>Desde el navbar podremos acceder a esta vista donde podremos rellenar el formulario con los requisitos de la aplicación que queramos generar mediante el algoritmo GPT-3.</p>
+        <p>En el formulario de <b>GPT-3</b>, al ser un servicio de pago, es necesario tener peticiones
+        disponibles para poder ejecutar el algoritmo, ese dato lo podremos comprobar
+        en este misma vista. Además cuando no nos queden peticiones disponibles nos saldrá
+        un aviso informando al usuario de que debe adquirir más peticiones pulsando en el
+        botón justo inferior al mensaje.</p>
         <img src="https://i.im.ge/2022/08/29/OtD2zS.gpt-3.png" alt="gpt-3" style="border:3px solid #18191b; border-radius: 12px" width="75%">
         <br>
         <br>
@@ -38,8 +39,8 @@
         <img src="https://i.im.ge/2022/08/29/OtIlZ4.modal-de-pago.png" alt="modal de pago" style="border:3px solid #18191b; border-radius: 12px" width="30%">
         <br>
         <br>
-        <p>Para probar la funcionalidad tanto con NLP como con GPT-3, ponemos a continuación unos requisitos para su uso:</p>
-        <p>Las bibliotecas son utilizadas por los estudiantes y profesores de Informática.
+        <p>Para probar la funcionalidad tanto con <b>NLP</b> como con <b>GPT-3</b>, ponemos a continuación unos requisitos para su uso:</p>
+        <p class="py-3 fst-italic">Las bibliotecas son utilizadas por los estudiantes y profesores de Informática.
             Las bibliotecas serán identificadas por un nombre, localización y tamaño.
             Las bibliotecas contienen libros y revistas.
             Los libros se pueden entregar tanto a los estudiantes como a los profesores.
@@ -52,43 +53,40 @@
             Las revistas: marca y semana.
             Se deberá almacenar el nombre, apellidos, cargo y especialidad de cada profesor.</p>
         <br>
-        <br>
         <h2>Modificar ejecuciones</h2>
-        <p>Desde el listado de ejecuaciones, pulsando sobre el botón azul de alguna de las ya generadas podremos ver el
-            modelado de clases fruto de dicho ejecución. Las 'cajas' (clases), de este modelado se
+        <p>Desde el listado de ejecuciones, pulsando sobre el botón azul de alguna de las ya generadas podremos ver el
+            modelado de clases fruto de dicha ejecución. Las "cajas" (clases), de este modelado se
             pueden mover a gusto del usuario, para poder visualizar de la mejor forma posible el diagrama.</p>
         <img src="https://i.im.ge/2022/08/29/OtIo1Y.edicion.png" alt="edicion" style="border:3px solid #18191b; border-radius: 12px" width="75%">
         <br>
         <br>
-        <p>Los nombres de estas clases, son editables, al igual que los nombres y tipos de sus atributos.
+        <p>Los nombres de estas clases son editables, al igual que los nombres y tipos de sus atributos.
             Para poder acceder al modal de modificación de todo ello, debemos hacer doble click en
             aquella clase que queramos modificar. De esta forma se nos abrirá el modal de edicción de la clase,
-            donde también podremos eliminar atributos pulsando el botón rojo de cada atributo, o añadir
-            nuevos atributos a la lista de los ya existentes.</p>
+            donde también podremos eliminar atributos pulsando el botón rojo de cada uno de ellos, o añadir
+            nuevos a la lista de los ya existentes.</p>
         <img src="https://i.im.ge/2022/08/29/OtIXwD.modal-clases.png" alt="modal clases" style="border:3px solid #18191b; border-radius: 12px" width="30%">
         <br>
         <br>
-        <p>También es posible, que una de las entidades del sistema a crear no haya sido detectada por el algoritmo,
+        <p>También es posible que una de las entidades del sistema a crear no haya sido detectada por el algoritmo,
             es por ello que se pueden crear nuevas clases haciendo doble click en cualquier espacio libre del modelado.</p>
         <br>
         <br>
         <h2>Modificar relaciones</h2>
-        <br>
-        <br>
         <p>Podemos abrir un modal para modificar las relaciones del diagrama, pulsando sobre aquella relación que queramos
             editar. Pudiendo indicar en este caso la multiplicidad de la relación.</p>
         <img src="https://i.im.ge/2022/08/29/OtIMAh.editar-relacion.png" alt="editar relacion" style="border:3px solid #18191b; border-radius: 12px" width="40%">
         <br>
         <br>
-        <p>Además, si una relación necesaria no se encuentra en el modelado, podremos pulsar el botón '+ Añadir relación",
+        <p>Además, si una relación necesaria no se encuentra en el modelado, podremos pulsar el botón <b>"Añadir relación"</b>,
             y se nos abrirá el modal para crear una nueva,
-            eligiendo en primer lugar, con unos selectores, las clases de la relación de entre las existentes
-            en el diagrama, y posteriormente la multiplicidad de la relación. Al pulsar en guardar se cerrará el modal
+            eligiendo, en primer lugar con unos selectores, las clases de la relación de entre las existentes
+            en el diagrama, y posteriormente la multiplicidad de la relación. Al pulsar en <b>Guardar</b>, se cerrará el modal
             y podremos ver la relación ya creada.</p>
         <img src="https://i.im.ge/2022/08/29/OtIuXC.modal-relaciones.png" alt="editar relacion" style="border:3px solid #18191b; border-radius: 12px" width="40%">
         <br>
         <br>
-        <p>Finalmente podremos ver los requisitos que introdujimos para generar el diagrama desde el botón Requisitos
+        <p>Finalmente podremos ver los requisitos que introdujimos para generar el diagrama desde el botón <b>"Requisitos"</b>
         que nos abrirá un modal con los mismos.</p>
         <img src="https://i.im.ge/2022/08/29/OtIFiq.modal-requisitos.png" alt="modal requisitos" style="border:3px solid #18191b; border-radius: 12px" width="40%"></a>
     </div>
