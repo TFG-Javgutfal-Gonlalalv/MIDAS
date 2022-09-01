@@ -7,6 +7,7 @@ from main.reglas import class_detection_rules
 from main.utils import get_success_rate_classes, get_success_rate_attributes, creation_clasess_attributes_relations, \
     update_log
 
+NLP_MODEL = None
 
 def ejecucion(docIn, num, user):
     nlp = spacy.load("es_core_news_md")
@@ -36,7 +37,12 @@ def ejecucion(docIn, num, user):
 
 
 def ejecucion_sin_solucion(docIn, user):
-    nlp = spacy.load("es_core_news_md")
+    if globals()["NLP_MODEL"]  is None:
+        globals()["NLP_MODEL"] = spacy.load("es_core_news_md")
+
+    nlp = globals()["NLP_MODEL"]
+
+
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
