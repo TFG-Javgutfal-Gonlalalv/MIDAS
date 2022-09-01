@@ -14,8 +14,7 @@ def lista_locs(doc):
     return lista
 
 
-def class_detection_rules(doc):
-    nlp = spacy.load("es_core_news_md")
+def class_detection_rules(doc,nlp):
     lista_preposiciones = list(Prepositions.objects.values_list("name", flat=True))
 
     nouns = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ == "NOUN"]
@@ -201,7 +200,7 @@ def class_detection_rules(doc):
     for clase in classes:
         if clase.percent >= 0:
             classes_final.append(clase)
-    relations_final = relations_detections(classes_final, doc)
+    relations_final = relations_detections(classes_final, doc,nlp)
     return classes_final, relations_final
 
 
@@ -357,9 +356,8 @@ def clases_atributos_preposiciones_list(phrase, preps, classes, attributes_list,
     return classes, attribute_found
 
 
-def relations_detections(classes, doc):
+def relations_detections(classes, doc,nlp):
     phrases = doc.text.split(".")
-    nlp = spacy.load("es_core_news_md")
     relations = []
 
     for phrase in phrases:
