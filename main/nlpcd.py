@@ -36,7 +36,7 @@ def ejecucion(docIn, num, user):
 
 
 def ejecucion_sin_solucion(docIn, user):
-    nlp = spacy.load("es_core_news_md")
+    nlp = spacy.load("es_core_news_sm")
     doc = nlp(docIn)
 
     run = Run(text=docIn, run_datetime=datetime.datetime.now(), user_fk=user)
